@@ -1,0 +1,86 @@
+[
+  {
+    "id": "proj_1773683165978",
+    "name": "Taglia e Cuci Express",
+    "domain": "https://tagliaecucienna.it",
+    "tipo": "vetrina",
+    "status": "attivo",
+    "logo": "data:image/jpeg;base64,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",
+    "wpUrl": "https://tagliaecucienna.it/wp-admin",
+    "wpUser": "eLpAq5tVxb8wh",
+    "links": [],
+    "notes": "",
+    "checklist": [
+      {
+        "id": 1,
+        "label": "Brief & Analisi",
+        "done": false,
+        "checks": [
+          "Brief cliente completato",
+          "Analisi competitor",
+          "Obiettivi e KPI definiti",
+          "Budget e timeline concordati"
+        ]
+      },
+      {
+        "id": 2,
+        "label": "Wireframe",
+        "done": false,
+        "checks": [
+          "Sitemap approvata",
+          "User flow definito",
+          "Wireframe low-fi completati",
+          "Approvazione cliente"
+        ]
+      },
+      {
+        "id": 3,
+        "label": "Design UI",
+        "done": false,
+        "checks": [
+          "Moodboard condiviso",
+          "Palette e font approvati",
+          "Mockup desktop",
+          "Mockup mobile",
+          "Design system"
+        ]
+      },
+      {
+        "id": 4,
+        "label": "Sviluppo",
+        "done": false,
+        "checks": [
+          "Setup ambiente dev",
+          "Frontend implementato",
+          "CMS configurato",
+          "Performance ottimizzata"
+        ]
+      },
+      {
+        "id": 5,
+        "label": "QA & Testing",
+        "done": false,
+        "checks": [
+          "Test cross-browser",
+          "Check responsive",
+          "PageSpeed > 85",
+          "Link verificati",
+          "Revisione cliente"
+        ]
+      },
+      {
+        "id": 6,
+        "label": "Consegna",
+        "done": false,
+        "checks": [
+          "Deploy produzione",
+          "Documentazione consegnata",
+          "Analytics attivi",
+          "Backup configurato"
+        ]
+      }
+    ],
+    "brief": {},
+    "createdAt": 1773683165978
+  }
+]
