@@ -1,7 +1,7 @@
 [
   {
-    "id": "proj_1773683427411",
-    "name": "Taglia e Cuci Express",
+    "id": "proj_1773683488815",
+    "name": "Taglio e Cuci Express",
     "domain": "https://tagliaecucienna.it",
     "tipo": "vetrina",
     "status": "attivo",
@@ -111,24 +111,24 @@
         },
         {
           "nome": "Chi Siamo",
-          "kwd": "storia sartoria, presentazione",
-          "kwdSecondarie": "valori, mission",
-          "sezioni": "storia, valori, mission"
+          "kwd": "sartoria tradizionale, artigianato",
+          "kwdSecondarie": "storia, mission",
+          "sezioni": "storia, presentazione, valori"
         },
         {
           "nome": "Servizi",
-          "kwd": "servizi sartoriali, taglia e cuci",
-          "kwdSecondarie": "orli, cerniere, modifica taglia",
-          "sezioni": "elenco servizi, descrizioni"
+          "kwd": "taglia e cuci, modifica abiti",
+          "kwdSecondarie": "orli, cerniere, cuciture",
+          "sezioni": "elenco servizi, descrizioni, prezzi"
         },
         {
           "nome": "Contatti",
-          "kwd": "contatti sartoria, indirizzo",
+          "kwd": "contatti, indirizzo",
           "kwdSecondarie": "telefono, email",
-          "sezioni": "indirizzo, telefono, email, form di contatto"
+          "sezioni": "form di contatto, mappa, orari"
         }
       ]
     },
-    "createdAt": 1773683427411
+    "createdAt": 1773683488815
   }
 ]
