@@ -1,0 +1,98 @@
+[
+  {
+    "id": "step1",
+    "num": 1,
+    "title": "Brief & Analisi",
+    "desc": "Raccolta requisiti, analisi competitor, definizione obiettivi, KPI e target del progetto.",
+    "status": "pending",
+    "checks": [
+      "Compilato brief cliente",
+      "Analisi competitor (min. 3)",
+      "Definiti KPI e obiettivi",
+      "Budget e timeline concordati"
+    ],
+    "notes": "",
+    "checksDone": [
+      0
+    ]
+  },
+  {
+    "id": "step2",
+    "num": 2,
+    "title": "Strategia & Wireframe",
+    "desc": "Architettura informativa, user flow, sitemap, wireframe low-fidelity e validazione con il cliente.",
+    "status": "pending",
+    "checks": [
+      "Sitemap approvata",
+      "User flow definito",
+      "Wireframe low-fi completati",
+      "Approvazione cliente ricevuta"
+    ],
+    "notes": "",
+    "checksDone": []
+  },
+  {
+    "id": "step3",
+    "num": 3,
+    "title": "Design UI",
+    "desc": "Mockup hi-fidelity, sistema di design, palette, tipografia, componenti e micro-interazioni.",
+    "status": "pending",
+    "checks": [
+      "Moodboard condiviso",
+      "Palette e font approvati",
+      "Mockup desktop completati",
+      "Mockup mobile completati",
+      "Design system documentato"
+    ],
+    "notes": "",
+    "checksDone": []
+  },
+  {
+    "id": "step4",
+    "num": 4,
+    "title": "Sviluppo",
+    "desc": "Implementazione frontend/backend, integrazioni API, CMS, ottimizzazione performance e codice.",
+    "status": "pending",
+    "checks": [
+      "Setup ambiente dev",
+      "Frontend implementato",
+      "Backend / CMS configurato",
+      "Integrazioni API funzionanti",
+      "Performance ottimizzata"
+    ],
+    "notes": "",
+    "checksDone": []
+  },
+  {
+    "id": "step5",
+    "num": 5,
+    "title": "QA & Testing",
+    "desc": "Test cross-browser, responsive, velocità PageSpeed, accessibilità WCAG e revisione finale.",
+    "status": "pending",
+    "checks": [
+      "Test cross-browser completato",
+      "Check responsive (mobile/tablet)",
+      "PageSpeed > 85",
+      "Link interni verificati",
+      "Revisione finale cliente"
+    ],
+    "notes": "",
+    "checksDone": []
+  },
+  {
+    "id": "step6",
+    "num": 6,
+    "title": "Consegna & Go Live",
+    "desc": "Deploy produzione, handoff documentazione, formazione cliente e monitoraggio post-launch.",
+    "status": "pending",
+    "checks": [
+      "Deploy su produzione",
+      "Documentazione consegnata",
+      "Formazione cliente effettuata",
+      "Analytics attivi",
+      "Backup configurato"
+    ],
+    "notes": "",
+    "checksDone": []
+  }
+]
