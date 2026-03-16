@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Schede Prodotto AI — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+/* API key banner */
+.api-banner {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(251,191,36,0.07); border:1px solid rgba(251,191,36,0.20);
+  border-radius:var(--r-lg); padding:11px 16px; margin-bottom:24px;
+}
+.api-banner input {
+  flex:1; background:none; border:none; outline:none;
+  color:var(--text-100); font-size:13px;
+}
+.api-banner input::placeholder { color:rgba(251,191,36,0.45); }
+.api-banner a { font-size:12px; color:var(--accent-gold); white-space:nowrap; }
+.api-status-dot { width:8px; height:8px; border-radius:50%; background:var(--text-35); flex-shrink:0; transition:background .3s; }
+.api-status-dot.on { background:var(--accent-gold); box-shadow:0 0 7px var(--accent-gold); }
+
+/* layout */
+.schede-wrap { display:grid; grid-template-columns:370px 1fr; gap:22px; align-items:start; }
+
+/* panel */
+.panel {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); overflow:hidden;
+  position:sticky; top:20px;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+}
+.panel-tabs { display:flex; border-bottom:1px solid var(--glass-border); }
+.ptab {
+  flex:1; padding:13px 8px; text-align:center; cursor:pointer;
+  font-size:13px; font-weight:600; color:var(--text-60);
+  background:none; border:none; position:relative; transition:color var(--transition);
+}
+.ptab.active { color:var(--accent-violet-soft); }
+.ptab.active::after {
+  content:''; position:absolute; bottom:0; left:12%; right:12%;
+  height:2px; background:linear-gradient(90deg,var(--accent-violet),var(--accent-cyan));
+  border-radius:2px 2px 0 0;
+}
+.panel-body { padding:22px; max-height:calc(100vh - 180px); overflow-y:auto; }
+
+.tab-pane { display:none; }
+.tab-pane.active { display:block; }
+
+/* tones */
+.tone-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+.tone-btn {
+  padding:9px 6px; border-radius:var(--r-md);
+  background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
+  color:var(--text-60); cursor:pointer; transition:all var(--transition);
+  font-size:12px; font-weight:500; text-align:center;
+}
+.tone-btn.active, .tone-btn:hover {
+  background:rgba(124,106,255,0.16); color:var(--accent-violet-soft);
+  border-color:rgba(124,106,255,0.32);
+}
+
+/* sections checkboxes */
+.secs-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.sec-chk {
+  display:flex; align-items:center; gap:7px;
+  padding:8px 10px; border-radius:var(--r-md);
+  background:rgba(255,255,255,0.03); border:1px solid var(--glass-border);
+  cursor:pointer; transition:all var(--transition); font-size:12px; color:var(--text-60);
+  user-select:none;
+}
+.sec-chk.on { color:var(--text-100); border-color:rgba(124,106,255,0.24); }
+.sec-box {
+  width:14px; height:14px; border-radius:3px; border:1.5px solid var(--glass-border);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:9px;
+  transition:all var(--transition);
+}
+.sec-chk.on .sec-box { background:var(--accent-violet); border-color:var(--accent-violet); color:#fff; }
+
+/* toggle */
+.toggle-row { display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-top:1px solid var(--glass-border); margin-top:6px; }
+.toggle-lbl { font-size:13px; color:var(--text-60); }
+.toggle-lbl small { display:block; font-size:11px; color:var(--text-35); margin-top:2px; }
+.tog {
+  width:38px; height:22px; background:rgba(255,255,255,0.10); border-radius:20px;
+  cursor:pointer; position:relative; transition:background .2s; flex-shrink:0;
+}
+.tog.on { background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan)); }
+.tog::after {
+  content:''; position:absolute; left:3px; top:3px; width:16px; height:16px;
+  border-radius:50%; background:#fff; transition:transform .2s;
+}
+.tog.on::after { transform:translateX(16px); }
+
+/* result */
+.result-panel {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); overflow:hidden;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+}
+.result-header {
+  padding:16px 22px; border-bottom:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(124,106,255,0.04);
+}
+.result-title { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; }
+.result-actions { display:flex; gap:7px; }
+.result-body { padding:24px; min-height:360px; }
+
+.result-empty {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:320px; color:var(--text-35); text-align:center; gap:12px;
+}
+.result-empty-icon { font-size:42px; opacity:.25; }
+
+.sec-block { margin-bottom:22px; padding-bottom:22px; border-bottom:1px solid var(--glass-border); }
+.sec-block:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.sec-block-head {
+  display:flex; align-items:center; justify-content:space-between;
+  font-size:10px; letter-spacing:1.8px; text-transform:uppercase;
+  color:var(--accent-violet-soft); font-weight:700; margin-bottom:9px;
+}
+.copy-mini {
+  background:rgba(124,106,255,0.10); color:var(--accent-violet-soft);
+  border:1px solid rgba(124,106,255,0.20); padding:3px 10px;
+  border-radius:6px; font-size:11px; cursor:pointer; transition:all var(--transition);
+  text-transform:none; letter-spacing:0; font-family:inherit; font-weight:600;
+}
+.copy-mini:hover { background:rgba(124,106,255,0.20); }
+.sec-block-body { font-size:14px; line-height:1.75; color:var(--text-60); }
+.sec-block-body strong { color:var(--text-100); }
+.sec-block-body ul { padding-left:18px; }
+.sec-block-body li { margin-bottom:5px; }
+
+/* CSV */
+.csv-drop {
+  border:2px dashed rgba(56,189,248,0.25); border-radius:var(--r-lg);
+  padding:28px; text-align:center; cursor:pointer;
+  background:rgba(56,189,248,0.03); transition:all var(--transition);
+  margin-bottom:12px;
+}
+.csv-drop:hover { border-color:rgba(56,189,248,0.5); background:rgba(56,189,248,0.07); }
+.csv-table-wrap { overflow-x:auto; background:rgba(0,0,0,0.2); border-radius:var(--r-md); border:1px solid var(--glass-border); max-height:200px; overflow-y:auto; }
+table.csv-t { width:100%; border-collapse:collapse; font-size:12px; }
+table.csv-t th { text-align:left; padding:8px 12px; border-bottom:1px solid var(--glass-border); color:var(--accent-cyan); font-size:10px; letter-spacing:1px; text-transform:uppercase; position:sticky; top:0; background:var(--bg-surface); }
+table.csv-t td { padding:7px 12px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text-60); }
+table.csv-t tr:last-child td { border-bottom:none; }
+
+@media(max-width:960px) { .schede-wrap { grid-template-columns:1fr; } .panel { position:static; } }
+@media(max-width:768px) { .tone-grid, .secs-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="../progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span><span class="nav-badge" id="sb-badge-skills">0</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap Progetto</span><span class="nav-badge green">6</span></a>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📁</span><span class="nav-label">Archivio Template</span><span class="nav-badge" id="sb-badge-archivio">0</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a><div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" id="sb-api-row"><span class="sidebar-footer-api-dot off" id="sb-api-dot2"></span><span id="sb-api-label2">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='../progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item active" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../impostazioni/index.html'"><span class="bicon">⚙️</span>Settings</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="page-eyebrow">AI Powered</div>
+    <div class="page-title">✦ Schede Prodotto AI</div>
+    <div class="page-sub">Genera schede prodotto ottimizzate SEO. Singola o batch da CSV, con 6 toni di voce diversi.</div>
+  </div>
+
+  <!-- API STATUS (configurata in Impostazioni) -->
+  <div id="api-banner-wrap" style="margin-bottom:20px;"></div>
+
+  <div class="schede-wrap">
+
+    <!-- PANEL -->
+    <div class="panel">
+      <div class="panel-tabs">
+        <button class="ptab active" data-tab="singolo" onclick="switchTab('singolo',this)">✦ Singolo</button>
+        <button class="ptab" data-tab="csv" onclick="switchTab('csv',this)">⊞ Multi CSV</button>
+      </div>
+
+      <div class="panel-body">
+
+        <!-- TAB SINGOLO -->
+        <div class="tab-pane active" id="tab-singolo">
+          <div class="form-group">
+            <label class="form-label">Nome Prodotto <span style="color:var(--accent-violet-soft)">*</span></label>
+            <input class="form-input" type="text" id="p-nome" placeholder="es. iPhone 15 Pro, Scarpe running…"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Categoria</label>
+              <input class="form-input" type="text" id="p-cat" placeholder="Elettronica, Moda…"/>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Brand</label>
+              <input class="form-input" type="text" id="p-brand-name" placeholder="Nome brand…"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Caratteristiche</label>
+            <textarea class="form-textarea" id="p-features" placeholder="Elenca le caratteristiche principali…" style="min-height:70px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Note Brand / Tone of Voice</label>
+            <textarea class="form-textarea" id="p-note" placeholder="Valori brand, target, stile comunicazione…" style="min-height:60px;"></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-lbl">
+              🔍 Ricerca automatica
+              <small>L'AI cerca specifiche tecniche e keyword SEO</small>
+            </div>
+            <div class="tog on" id="tog-search" onclick="this.classList.toggle('on')"></div>
+          </div>
+
+          <div class="form-group mt-4">
+            <label class="form-label">Tono di Voce</label>
+            <div class="tone-grid" id="tone-grid">
+              <div class="tone-btn active" data-tone="professionale" onclick="pickTone(this,'tone-grid')">🏢 Professionale</div>
+              <div class="tone-btn" data-tone="amichevole"   onclick="pickTone(this,'tone-grid')">😊 Amichevole</div>
+              <div class="tone-btn" data-tone="luxury"       onclick="pickTone(this,'tone-grid')">✦ Luxury</div>
+              <div class="tone-btn" data-tone="conversion"   onclick="pickTone(this,'tone-grid')">⚡ Conversion</div>
+              <div class="tone-btn" data-tone="tecnico"      onclick="pickTone(this,'tone-grid')">🔧 Tecnico</div>
+              <div class="tone-btn" data-tone="genz"         onclick="pickTone(this,'tone-grid')">🔥 Gen Z</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sezioni da generare</label>
+            <div class="secs-grid" id="secs-grid">
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Titolo SEO</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Desc. breve</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Desc. completa</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Bullet vantaggi</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Specifiche</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>Meta SEO</div>
+              <div class="sec-chk on" onclick="togSec(this)"><div class="sec-box">✓</div>FAQ (3)</div>
+              <div class="sec-chk"   onclick="togSec(this)"><div class="sec-box"></div>Alt text img</div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full mt-4" onclick="genera()">✦ Genera Scheda</button>
+        </div>
+
+        <!-- TAB CSV -->
+        <div class="tab-pane" id="tab-csv">
+          <div class="csv-drop" onclick="document.getElementById('csv-file').click()">
+            <div style="font-size:28px;margin-bottom:8px;opacity:.4;">📂</div>
+            <div style="font-size:14px;color:var(--text-60);font-weight:500;">Carica file CSV</div>
+            <div style="font-size:11px;color:var(--text-35);margin-top:4px;">Colonne: nome, caratteristiche, categoria, note</div>
+            <input type="file" id="csv-file" accept=".csv" style="display:none" onchange="loadCSV(this)"/>
+          </div>
+          <textarea class="form-textarea" id="csv-paste" placeholder="Oppure incolla i dati CSV qui…" style="min-height:80px;margin-bottom:14px;" oninput="parseCSV()"></textarea>
+
+          <div id="csv-preview" style="display:none;margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--accent-cyan);font-weight:600;margin-bottom:7px;"><span id="csv-count">0</span> prodotti caricati</div>
+            <div class="csv-table-wrap"><table class="csv-t" id="csv-table"></table></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Tono Globale</label>
+            <div class="tone-grid" id="csv-tone-grid">
+              <div class="tone-btn active" data-tone="professionale" onclick="pickTone(this,'csv-tone-grid')">🏢 Professionale</div>
+              <div class="tone-btn" data-tone="amichevole"   onclick="pickTone(this,'csv-tone-grid')">😊 Amichevole</div>
+              <div class="tone-btn" data-tone="luxury"       onclick="pickTone(this,'csv-tone-grid')">✦ Luxury</div>
+              <div class="tone-btn" data-tone="conversion"   onclick="pickTone(this,'csv-tone-grid')">⚡ Conversion</div>
+              <div class="tone-btn" data-tone="tecnico"      onclick="pickTone(this,'csv-tone-grid')">🔧 Tecnico</div>
+              <div class="tone-btn" data-tone="genz"         onclick="pickTone(this,'csv-tone-grid')">🔥 Gen Z</div>
+            </div>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-lbl">🔍 Ricerca automatica per ogni prodotto</div>
+            <div class="tog on" id="csv-tog" onclick="this.classList.toggle('on')"></div>
+          </div>
+
+          <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;">
+            <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="generaCSV()">⊞ Genera Tutto</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportCsvResult()">⬇ CSV</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportTxt()">⬇ TXT</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RESULT -->
+    <div class="result-panel">
+      <div class="result-header">
+        <div class="result-title">Output AI</div>
+        <div class="result-actions">
+          <button class="btn btn-ghost btn-sm" onclick="copyAll()">📋 Copia tutto</button>
+          <button class="btn btn-ghost btn-sm" onclick="saveToArchive()">💾 Salva in Archivio</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="clearResult()" title="Pulisci">✕</button>
+        </div>
+      </div>
+      <div class="result-body" id="result-body">
+        <div class="result-empty">
+          <div class="result-empty-icon">✦</div>
+          <div style="font-size:14px;line-height:1.7;">Inserisci il nome del prodotto<br/>e premi <strong style="color:var(--text-100);">Genera Scheda</strong></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+let csvData = [];
+let csvResults = [];
+let currentTone = 'professionale';
+let csvTone = 'professionale';
+
+const TONES = {
+  professionale: 'professionale e autorevole',
+  amichevole:    'amichevole e colloquiale',
+  luxury:        'lussuoso, esclusivo ed elegante',
+  conversion:    'persuasivo, orientato alla conversione, con CTA forti',
+  tecnico:       'tecnico, dettagliato e preciso',
+  genz:          'energico, informale Gen Z, con emoji'
+};
+
+// ── INIT ─────────────────────────────────────────────────
+(function init() {
+  const k = store.get('hub_groq_key', '');
+  const banner = document.getElementById('api-banner-wrap');
+  if (k) {
+    banner.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:12px;font-size:13px;color:var(--accent-green);margin-bottom:4px;"><span style=\'width:8px;height:8px;border-radius:50%;background:var(--accent-green);display:inline-block;box-shadow:0 0 6px var(--accent-green);\'></span> Groq API Key configurata &nbsp;·&nbsp; <a href=\"../impostazioni/index.html\" style=\'color:var(--accent-green);font-weight:600;\'>Modifica in Impostazioni →</a></div>';
+    setApiDot(true);
+  } else {
+    banner.innerHTML = '<div style=\"display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.2);border-radius:12px;font-size:13px;\"><span style=\'color:var(--accent-gold);\'>⚠️ API Key non configurata</span><a href=\"../impostazioni/index.html\" class=\"btn btn-ghost btn-sm\" style=\"color:var(--accent-gold);border-color:rgba(251,191,36,0.3)\">Vai a Impostazioni →</a></div>';
+  }
+  document.getElementById('sb-badge-progetti') && (document.getElementById('sb-badge-progetti').textContent = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length);
+  document.getElementById('sb-badge-interventi') && (document.getElementById('sb-badge-interventi').textContent = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length);
+  document.getElementById('sb-badge-skills').textContent   = store.get('hub_skills',[]).length;
+  document.getElementById('sb-badge-archivio').textContent = store.get('hub_archivio',[]).length;
+})();
+
+function setApiDot(on) {
+  document.getElementById('api-dot').classList.toggle('on', on);
+  document.getElementById('sb-api-dot2').classList.toggle('off', !on);
+  document.getElementById('sb-api-label2').textContent = on ? 'Groq API configurata' : 'API Key non configurata';
+}
+
+// ── TABS ─────────────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function pickTone(el, gridId) {
+  document.querySelectorAll('#' + gridId + ' .tone-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  if (gridId === 'tone-grid') currentTone = el.dataset.tone;
+  else csvTone = el.dataset.tone;
+}
+
+function togSec(el) {
+  el.classList.toggle('on');
+  el.querySelector('.sec-box').textContent = el.classList.contains('on') ? '✓' : '';
+}
+
+function getSections() {
+  return [...document.querySelectorAll('#secs-grid .sec-chk.on')].map(e => e.textContent.replace('✓','').trim());
+}
+
+// ── GENERATE ─────────────────────────────────────────────
+async function genera() {
+  const key  = store.get('hub_groq_key','');
+  if (!key)  { toast('Configura la Groq API Key in Impostazioni!', 'err'); setTimeout(()=>location.href='../impostazioni/index.html', 1500); return; }
+  const nome = document.getElementById('p-nome').value.trim();
+  if (!nome) { toast('Inserisci il nome del prodotto!', 'err'); return; }
+
+  // Disabilita pulsante durante generazione
+  const btn = document.querySelector('#tab-singolo .btn-primary');
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; btn.textContent = '⟳ Generazione in corso…'; }
+
+  const payload = {
+    nome,
+    cat:      document.getElementById('p-cat').value.trim(),
+    brand:    document.getElementById('p-brand-name').value.trim(),
+    features: document.getElementById('p-features').value.trim(),
+    note:     document.getElementById('p-note').value.trim(),
+    auto:     document.getElementById('tog-search').classList.contains('on'),
+    tone:     currentTone,
+    sections: getSections()
+  };
+
+  showLoading(`Generazione scheda per "${nome}"…`);
+
+  try {
+    const text = await callGroq(key, buildPrompt(payload));
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.textContent = '✦ Genera Scheda'; }
+    renderResult(nome, text, payload.sections);
+    logActivity('✦', `Scheda generata: ${nome}`);
+    const stats = store.get('hub_stats', {});
+    stats.schede = (stats.schede || 0) + 1;
+    await syncSave('hub_stats', stats);
+  } catch(e) {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.textContent = '✦ Genera Scheda'; }
+    showError(e.message);
+  }
+}
+
+async function generaCSV() {
+  const key = store.get('hub_groq_key','');
+  if (!key)       { toast('Configura la Groq API Key in Impostazioni!', 'err'); setTimeout(()=>location.href='../impostazioni/index.html', 1500); return; }
+  if (!csvData.length) { toast('Carica prima un CSV!', 'err'); return; }
+
+  const csvBtn = document.querySelector('#tab-csv .btn-primary');
+  if (csvBtn) { csvBtn.disabled = true; csvBtn.style.opacity = '0.6'; csvBtn.textContent = '⟳ Generazione in corso…'; }
+
+  csvResults = [];
+  const tone = csvTone;
+  const auto = document.getElementById('csv-tog').classList.contains('on');
+  const sections = ['Titolo SEO','Desc. breve','Bullet vantaggi','Meta SEO'];
+
+  for (let i = 0; i < csvData.length; i++) {
+    const row = csvData[i];
+    const nome = row.nome || row['nome prodotto'] || '';
+    if (!nome) continue;
+    showLoading(`Prodotto ${i+1}/${csvData.length}: "${nome}"…`);
+    try {
+      const text = await callGroq(key, buildPrompt({ nome, cat: row.categoria||'', features: row.caratteristiche||'', note: row.note||'', brand:'', auto, tone, sections }));
+      csvResults.push({ nome, text });
+    } catch(e) {
+      csvResults.push({ nome, text: 'Errore: ' + e.message });
+    }
+    await sleep(350);
+  }
+
+  const stats = store.get('hub_stats', {});
+  stats.schede = (stats.schede || 0) + csvResults.length;
+  await syncSave('hub_stats', stats);
+
+  if (csvBtn) { csvBtn.disabled = false; csvBtn.style.opacity = ''; csvBtn.textContent = '⊞ Genera Tutto'; }
+  renderCSVResult();
+}
+
+// ── API ───────────────────────────────────────────────────
+async function callGroq(key, prompt) {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.72,
+      max_tokens: 2000
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.choices[0].message.content;
+}
+
+function buildPrompt({ nome, cat, brand, features, note, auto, tone, sections }) {
+  let p = `Sei un esperto copywriter e-commerce italiano. Genera una scheda prodotto per:\n\nPRODOTTO: ${nome}`;
+  if (cat)      p += `\nCATEGORIA: ${cat}`;
+  if (brand)    p += `\nBRAND: ${brand}`;
+  if (features) p += `\nCARATTERISTICHE: ${features}`;
+  if (note)     p += `\nNOTE BRAND: ${note}`;
+  if (auto)     p += `\n\nUsa le tue conoscenze per arricchire con caratteristiche tecniche, materiali, keyword SEO tipici di questo prodotto.`;
+  p += `\n\nTONO DI VOCE: ${TONES[tone] || tone}`;
+  p += `\n\nGenera SOLO le sezioni richieste, ognuna nel formato:\n[SEZIONE: nome]\ncontenuto\n[/SEZIONE]\n\nSezioni richieste:\n${sections.map(s=>'- '+s).join('\n')}`;
+  p += `\n\nNon aggiungere testo al di fuori delle sezioni. Scrivi in italiano.`;
+  return p;
+}
+
+// ── RENDER RESULT ─────────────────────────────────────────
+function renderResult(nome, text, sections) {
+  const parsed = parseSections(text, sections);
+  document.getElementById('result-body').innerHTML = `
+    <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--glass-border);">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-35);margin-bottom:4px;">Prodotto generato</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;">${esc(nome)}</div>
+    </div>
+    ${parsed.map(s => `
+      <div class="sec-block">
+        <div class="sec-block-head">
+          ${esc(s.label)}
+          <button class="copy-mini" onclick="navigator.clipboard.writeText(${JSON.stringify(s.content)}).then(()=>toast('Copiato!','ok'))">Copia</button>
+        </div>
+        <div class="sec-block-body">${fmtContent(s.content)}</div>
+      </div>
+    `).join('')}
+  `;
+  window._lastResult = { nome, text };
+}
+
+function renderCSVResult() {
+  document.getElementById('result-body').innerHTML = `
+    <div style="margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--glass-border);">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;">✓ ${csvResults.length} Schede Generate</div>
+    </div>
+    ${csvResults.map((r,i) => `
+      <div class="sec-block">
+        <div class="sec-block-head">
+          ${i+1}. ${esc(r.nome)}
+          <button class="copy-mini" onclick="navigator.clipboard.writeText(${JSON.stringify(r.text)}).then(()=>toast('Copiato!','ok'))">Copia</button>
+        </div>
+        <div class="sec-block-body">${fmtContent(r.text)}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function parseSections(text, sections) {
+  const rx = /\[SEZIONE:\s*([^\]]+)\]([\s\S]*?)\[\/SEZIONE\]/gi;
+  const out = [];
+  let m;
+  while ((m = rx.exec(text)) !== null) out.push({ label: m[1].trim(), content: m[2].trim() });
+  if (!out.length) out.push({ label: 'Output', content: text });
+  return out;
+}
+
+function fmtContent(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^[-•]\s(.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>')
+    .replace(/\n\n/g, '<br/><br/>').replace(/\n/g, '<br/>');
+}
+
+function showLoading(msg) {
+  document.getElementById('result-body').innerHTML = `
+    <div class="result-empty">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div style="margin-top:14px;font-size:14px;color:var(--text-60);">${esc(msg)}</div>
+    </div>`;
+}
+function showError(msg) {
+  document.getElementById('result-body').innerHTML = `
+    <div class="result-empty"><div style="font-size:32px">⚠️</div><div style="color:#f87171;font-size:14px;">${esc(msg)}</div></div>`;
+}
+function clearResult() {
+  document.getElementById('result-body').innerHTML = `
+    <div class="result-empty"><div class="result-empty-icon">✦</div><div style="font-size:14px;line-height:1.7;">Inserisci il nome del prodotto<br/>e premi <strong style="color:var(--text-100);">Genera Scheda</strong></div></div>`;
+  window._lastResult = null;
+}
+
+function copyAll() {
+  const t = document.getElementById('result-body').innerText;
+  navigator.clipboard.writeText(t).then(() => toast('Output copiato!', 'ok'));
+}
+
+async function saveToArchive() {
+  if (!window._lastResult) { toast('Nessun output da salvare', 'err'); return; }
+  const arch = store.get('hub_archivio', []);
+  arch.unshift({
+    id: 'arc_' + Date.now(),
+    name: 'Scheda: ' + window._lastResult.nome,
+    type: 'scheda',
+    content: window._lastResult.text,
+    createdAt: Date.now()
+  });
+  await syncSave('hub_archivio', arch);
+  toast('Salvato in Archivio!', 'ok');
+  logActivity('📁', `Scheda salvata in archivio: ${window._lastResult.nome}`);
+  document.getElementById('sb-badge-archivio').textContent = arch.length;
+}
+
+// ── CSV ───────────────────────────────────────────────────
+function loadCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => { document.getElementById('csv-paste').value = e.target.result; parseCSV(); };
+  r.readAsText(file);
+}
+
+function parseCSV() {
+  const raw = document.getElementById('csv-paste').value.trim();
+  if (!raw) { csvData = []; updateCSVPreview(); return; }
+  const lines = raw.split('\n').filter(l => l.trim());
+  if (lines.length < 2) return;
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,'').toLowerCase());
+  csvData = lines.slice(1).map(line => {
+    const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g,''));
+    const obj = {};
+    headers.forEach((h,i) => obj[h] = vals[i]||'');
+    return obj;
+  }).filter(r => r.nome || r['nome prodotto']);
+  updateCSVPreview();
+}
+
+function updateCSVPreview() {
+  const p = document.getElementById('csv-preview');
+  if (!csvData.length) { p.style.display='none'; return; }
+  p.style.display='block';
+  document.getElementById('csv-count').textContent = csvData.length;
+  const cols = Object.keys(csvData[0]);
+  document.getElementById('csv-table').innerHTML =
+    `<thead><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead>
+     <tbody>${csvData.slice(0,6).map(row=>`<tr>${cols.map(c=>`<td>${esc(row[c]||'')}</td>`).join('')}</tr>`).join('')}
+     ${csvData.length>6?`<tr><td colspan="${cols.length}" style="color:var(--text-35);font-style:italic">…altri ${csvData.length-6}</td></tr>`:''}
+     </tbody>`;
+}
+
+function exportCsvResult() {
+  if (!csvResults.length) { toast('Genera prima le schede!','err'); return; }
+  const rows = [['Prodotto','Output'], ...csvResults.map(r=>[r.nome, r.text.replace(/\n/g,' ')])];
+  downloadFile('schede_prodotto.csv', rows.map(r=>r.map(v=>'"'+v.replace(/"/g,'""')+'"').join(',')).join('\n'), 'text/csv');
+}
+
+function exportTxt() {
+  if (!csvResults.length) { toast('Genera prima le schede!','err'); return; }
+  downloadFile('schede_prodotto.txt', csvResults.map(r=>`=== ${r.nome} ===\n${r.text}`).join('\n\n---\n\n'));
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+async function logActivity(icon, text) {
+  const acts = store.get('hub_activity',[]);
+  acts.unshift({ icon, text, time: new Date().toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}) });
+  store.set('hub_activity', acts.slice(0,20));
+}
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

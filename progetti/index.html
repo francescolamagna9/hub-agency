@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Progetti — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+/* status filter */
+.filter-bar { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+.ftab { padding:6px 16px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-60); transition:all var(--transition); }
+.ftab.active, .ftab:hover { background:rgba(124,106,255,0.16); color:var(--accent-violet-soft); border-color:rgba(124,106,255,0.32); }
+
+/* progetti grid */
+.proj-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:18px; }
+
+.proj-card {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); overflow:hidden;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  transition:all var(--transition); cursor:pointer; display:flex; flex-direction:column;
+}
+.proj-card:hover { border-color:var(--glass-border-hover); transform:translateY(-3px); box-shadow:0 16px 40px rgba(0,0,0,0.28); }
+.proj-card.completato { opacity:0.55; }
+.proj-card.completato:hover { opacity:0.85; }
+
+/* card header con logo */
+.proj-card-hero {
+  height:110px; position:relative; overflow:hidden;
+  background:linear-gradient(135deg, rgba(124,106,255,0.25), rgba(56,189,248,0.15));
+  display:flex; align-items:center; justify-content:center;
+}
+.proj-card-hero img { width:100%; height:100%; object-fit:cover; }
+.proj-card-hero-initials {
+  font-family:'Syne',sans-serif; font-size:36px; font-weight:800;
+  color:rgba(255,255,255,0.5); letter-spacing:-1px;
+}
+.proj-card-status-badge {
+  position:absolute; top:10px; right:10px;
+  font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px;
+}
+.badge-attivo { background:rgba(52,211,153,0.2); color:var(--accent-green); border:1px solid rgba(52,211,153,0.3); }
+.badge-pausa  { background:rgba(251,191,36,0.18); color:var(--accent-gold); border:1px solid rgba(251,191,36,0.28); }
+.badge-completato { background:rgba(255,255,255,0.1); color:var(--text-35); border:1px solid var(--glass-border); }
+
+.proj-card-body { padding:16px 18px; flex:1; }
+.proj-card-name { font-family:'Syne',sans-serif; font-weight:800; font-size:16px; margin-bottom:3px; }
+.proj-card-domain { font-size:12px; color:var(--text-35); margin-bottom:10px; }
+.proj-card-type { font-size:11px; color:var(--accent-violet-soft); font-weight:600; margin-bottom:12px; }
+
+.proj-progress { margin-bottom:14px; }
+.proj-progress-top { display:flex; justify-content:space-between; font-size:11px; color:var(--text-35); margin-bottom:5px; }
+.proj-progress-bar { height:5px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+.proj-progress-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--accent-violet),var(--accent-cyan)); transition:width .4s ease; }
+
+.proj-card-links { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
+.proj-link-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:10px; padding:3px 8px; border-radius:6px;
+  background:rgba(255,255,255,0.06); border:1px solid var(--glass-border);
+  color:var(--text-60); text-decoration:none; transition:all var(--transition);
+}
+.proj-link-chip:hover { background:rgba(124,106,255,0.15); color:var(--accent-violet-soft); border-color:rgba(124,106,255,0.25); }
+
+.proj-card-footer {
+  padding:12px 18px; border-top:1px solid var(--glass-border);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.proj-card-phase { font-size:11px; color:var(--accent-violet-soft); font-weight:600; }
+.proj-card-date { font-size:11px; color:var(--text-35); }
+
+/* empty */
+.empty { text-align:center; padding:64px 20px; grid-column:1/-1; }
+.empty-icon { font-size:48px; margin-bottom:14px; opacity:.25; }
+.empty-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:8px; }
+.empty-sub { font-size:13px; color:var(--text-60); line-height:1.6; }
+
+/* modal nuovo progetto */
+.modal-lg { max-width:560px; }
+
+/* upload area brief */
+.brief-upload {
+  border:2px dashed rgba(124,106,255,0.28); border-radius:var(--r-lg);
+  padding:28px; text-align:center; cursor:pointer;
+  background:rgba(124,106,255,0.04); transition:all var(--transition);
+}
+.brief-upload:hover, .brief-upload.over { border-color:rgba(124,106,255,0.55); background:rgba(124,106,255,0.08); }
+.brief-upload-icon { font-size:30px; margin-bottom:8px; opacity:.4; }
+.brief-upload-text { font-size:14px; color:var(--text-60); font-weight:500; }
+.brief-upload-hint { font-size:11px; color:var(--text-35); margin-top:4px; }
+
+.brief-loaded {
+  display:none; align-items:center; gap:12px;
+  background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.22);
+  border-radius:var(--r-lg); padding:12px 16px; margin-top:8px;
+}
+.brief-loaded-icon { font-size:20px; }
+.brief-loaded-name { font-size:13px; color:var(--accent-green); font-weight:600; flex:1; }
+.brief-loaded-remove { font-size:12px; color:var(--text-35); cursor:pointer; }
+.brief-loaded-remove:hover { color:#f87171; }
+
+/* logo upload */
+.logo-upload-wrap { display:flex; align-items:center; gap:14px; }
+.logo-preview {
+  width:64px; height:64px; border-radius:var(--r-md); flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-weight:800; font-size:20px; color:rgba(255,255,255,0.7);
+  overflow:hidden; cursor:pointer; border:2px dashed rgba(255,255,255,0.15);
+  transition:border-color var(--transition);
+}
+.logo-preview:hover { border-color:rgba(124,106,255,0.5); }
+.logo-preview img { width:100%; height:100%; object-fit:cover; }
+.logo-upload-hint { font-size:12px; color:var(--text-60); line-height:1.6; }
+
+/* tipo progetto pills */
+.tipo-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.tipo-btn {
+  padding:10px 8px; border-radius:var(--r-md);
+  background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
+  color:var(--text-60); cursor:pointer; transition:all var(--transition);
+  font-size:13px; font-weight:500; text-align:center;
+}
+.tipo-btn.active, .tipo-btn:hover { background:rgba(124,106,255,0.16); color:var(--accent-violet-soft); border-color:rgba(124,106,255,0.32); }
+
+/* AI parsing progress */
+.ai-parsing {
+  display:none; text-align:center; padding:20px;
+}
+.ai-parsing.visible { display:block; }
+.ai-parsing-text { font-size:13px; color:var(--text-60); margin-top:12px; }
+
+@media(max-width:768px){ .proj-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span><span class="nav-badge" id="sb-badge-skills">0</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📂</span><span class="nav-label">Archivio Template</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a>    <div style="margin-bottom:6px;padding:0 4px;">
+      <span class="sync-indicator sync-idle" id="sync-indicator">Sync non configurato</span>
+    </div>
+  <div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" onclick="location.href='../impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item active"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../dashboard/index.html'"><span class="bicon">🗂</span>Skill</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="page-eyebrow">Lavori</div>
+        <div class="page-title">📁 Progetti</div>
+        <div class="page-sub">Ogni nuovo sito dalla A alla Z. Carica il brief e la scheda si compila da sola.</div>
+      </div>
+      <button class="btn btn-primary" onclick="modalOpen('modal-new')">＋ Nuovo Progetto</button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="ftab active" data-f="tutti">Tutti</div>
+    <div class="ftab" data-f="attivo">Attivi</div>
+    <div class="ftab" data-f="pausa">In Pausa</div>
+    <div class="ftab" data-f="completato">Completati</div>
+  </div>
+
+  <div class="proj-grid" id="proj-grid"></div>
+</main>
+
+<!-- MODAL NUOVO PROGETTO -->
+<div class="modal-overlay" id="modal-new">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">📁 Nuovo Progetto</div>
+      <button class="modal-close" onclick="modalClose('modal-new')">✕</button>
+    </div>
+
+    <!-- LOGO -->
+    <div class="form-group">
+      <label class="form-label">Logo Progetto</label>
+      <div class="logo-upload-wrap">
+        <div class="logo-preview" id="logo-preview" onclick="document.getElementById('logo-file').click()">
+          <span id="logo-initials">?</span>
+          <img id="logo-img" src="" style="display:none;"/>
+        </div>
+        <input type="file" id="logo-file" accept="image/*" style="display:none" onchange="handleLogo(this)"/>
+        <div class="logo-upload-hint">Clicca per caricare il logo.<br/>Verrà usato come immagine della card.<br/><span style="color:var(--text-35);">JPG, PNG, SVG — max 2MB</span></div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nome Progetto <span style="color:var(--accent-violet-soft)">*</span></label>
+        <input class="form-input" type="text" id="n-name" placeholder="es. Taglia e Cuci Express" oninput="updateLogoInitials()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dominio</label>
+        <input class="form-input" type="text" id="n-domain" placeholder="es. tagliaecuci.it"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">WP Admin URL</label>
+        <input class="form-input" type="text" id="n-wp-url" placeholder="es. tagliaecuci.it/wp-admin"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">WP Username</label>
+        <input class="form-input" type="text" id="n-wp-user" placeholder="es. admin"/>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tipo Progetto</label>
+      <div class="tipo-grid" id="tipo-grid">
+        <div class="tipo-btn active" data-tipo="vetrina" onclick="pickTipo(this)">🌐 Sito Vetrina</div>
+        <div class="tipo-btn" data-tipo="ecommerce" onclick="pickTipo(this)">🛒 E-commerce</div>
+        <div class="tipo-btn" data-tipo="blog" onclick="pickTipo(this)">📝 Blog / Magazine</div>
+        <div class="tipo-btn" data-tipo="webapp" onclick="pickTipo(this)">⚡ Web App</div>
+      </div>
+    </div>
+
+    <!-- BRIEF UPLOAD -->
+    <div class="form-group">
+      <label class="form-label">Carica Project Bible <span style="color:var(--text-35)">(Word .docx)</span></label>
+      <div class="brief-upload" id="brief-drop" onclick="document.getElementById('brief-file').click()">
+        <div class="brief-upload-icon">📄</div>
+        <div class="brief-upload-text">Carica il tuo documento Word</div>
+        <div class="brief-upload-hint">.txt .md (consigliato) — oppure .docx con istruzioni</div>
+        <input type="file" id="brief-file" accept=".txt,.md,.docx" style="display:none" onchange="handleBrief(this)"/>
+      </div>
+      <div class="brief-loaded" id="brief-loaded">
+        <span class="brief-loaded-icon">📄</span>
+        <span class="brief-loaded-name" id="brief-loaded-name">—</span>
+        <span class="brief-loaded-remove" onclick="removeBrief()">✕ Rimuovi</span>
+      </div>
+    </div>
+
+    <div class="ai-parsing" id="ai-parsing">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="ai-parsing-text" id="ai-parsing-text">L'AI sta leggendo il brief…</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="modalClose('modal-new')">Annulla</button>
+      <button class="btn btn-primary" onclick="createProject()">📁 Crea Progetto</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+let progetti = store.get('hub_progetti', []);
+let filterStatus = 'tutti';
+let newLogoData = null;
+let newBriefText = null;
+let newBriefFile = null;
+let tipoSelected = 'vetrina';
+
+const TIPO_LABELS = { vetrina:'Sito Vetrina', ecommerce:'E-commerce', blog:'Blog / Magazine', webapp:'Web App' };
+const PHASE_NAMES = ['Brief & Analisi','Wireframe','Design UI','Sviluppo','QA & Testing','Consegna'];
+
+// ── FILTER ───────────────────────────────────────────────
+document.querySelector('.filter-bar').addEventListener('click', e => {
+  const t = e.target.closest('.ftab'); if(!t) return;
+  document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); filterStatus = t.dataset.f; (async function init() {
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    try {
+      await GitHubSync.pullAll();
+      progetti = store.get('hub_progetti', []);
+    } catch(e) { console.warn('Sync pull failed:', e.message); }
+  }
+  renderProjects();
+})();
+});
+
+// ── RENDER ───────────────────────────────────────────────
+function renderProjects() {
+  const filtered = filterStatus === 'tutti' ? progetti : progetti.filter(p => p.status === filterStatus);
+  const grid = document.getElementById('proj-grid');
+
+  updateBadges();
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty">
+      <div class="empty-icon">📁</div>
+      <div class="empty-title">${progetti.length ? 'Nessun progetto in questa categoria' : 'Nessun progetto ancora'}</div>
+      <div class="empty-sub">Clicca <strong>+ Nuovo Progetto</strong> per iniziare.<br/>Carica il brief Word e la scheda si compila da sola.</div>
+    </div>`; return;
+  }
+
+  grid.innerHTML = filtered.map(p => {
+    const done  = p.checklist ? p.checklist.filter(c=>c.done).length : 0;
+    const total = p.checklist ? p.checklist.length : 6;
+    const pct   = total > 0 ? Math.round(done/total*100) : 0;
+    const phase = PHASE_NAMES[Math.min(done, 5)];
+    const initials = (p.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const statusBadge = p.status === 'attivo' ? 'badge-attivo' : p.status === 'pausa' ? 'badge-pausa' : 'badge-completato';
+    const statusLabel = p.status === 'attivo' ? '🟢 Attivo' : p.status === 'pausa' ? '🟡 In Pausa' : '✓ Completato';
+    const quickLinks = (p.links||[]).slice(0,3);
+    const dateStr = p.createdAt ? new Date(p.createdAt).toLocaleDateString('it',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '';
+
+    return `
+      <div class="proj-card ${p.status === 'completato' ? 'completato' : ''}" onclick="openProject('${p.id}')">
+        <div class="proj-card-hero">
+          ${p.logo ? `<img src="${p.logo}" alt="${esc(p.name)}"/>` : `<div class="proj-card-hero-initials">${initials}</div>`}
+          <div class="proj-card-status-badge ${statusBadge}">${statusLabel}</div>
+        </div>
+        <div class="proj-card-body">
+          <div class="proj-card-name">${esc(p.name)}</div>
+          <div class="proj-card-domain">${esc(p.domain||'—')}</div>
+          <div class="proj-card-type">${TIPO_LABELS[p.tipo]||'Sito Vetrina'}</div>
+          <div class="proj-progress">
+            <div class="proj-progress-top"><span>Avanzamento</span><span>${pct}%</span></div>
+            <div class="proj-progress-bar"><div class="proj-progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          ${quickLinks.length ? `<div class="proj-card-links">${quickLinks.map(l=>`<a class="proj-link-chip" href="${esc(l.url)}" target="_blank" onclick="event.stopPropagation()">🔗 ${esc(l.label)}</a>`).join('')}</div>` : ''}
+        </div>
+        <div class="proj-card-footer">
+          <div class="proj-card-phase">⚡ ${esc(phase)}</div>
+          <div class="proj-card-date">${dateStr}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function openProject(id) {
+  location.href = 'scheda.html?id=' + id;
+}
+
+// ── CREATE PROJECT ────────────────────────────────────────
+async function createProject() {
+  const name = document.getElementById('n-name').value.trim();
+  if (!name) { toast('Inserisci il nome del progetto!', 'err'); return; }
+
+  const proj = {
+    id:        'proj_' + Date.now(),
+    name,
+    domain:    document.getElementById('n-domain').value.trim(),
+    tipo:      tipoSelected,
+    status:    'attivo',
+    logo:      newLogoData || null,
+    wpUrl:     document.getElementById('n-wp-url').value.trim(),
+    wpUser:    document.getElementById('n-wp-user').value.trim(),
+    links:     [],
+    notes:     '',
+    checklist: buildChecklist(tipoSelected),
+    brief:     {},
+    createdAt: Date.now()
+  };
+
+  // Se c'è un brief, parsealo con AI
+  if (newBriefText) {
+    const apiKey = store.get('hub_groq_key','');
+    if (apiKey) {
+      document.getElementById('ai-parsing').classList.add('visible');
+      document.querySelector('.modal-footer').style.opacity = '0.4';
+      document.querySelector('.modal-footer').style.pointerEvents = 'none';
+      try {
+        proj.brief = await parseBriefWithAI(apiKey, newBriefText, name);
+        // Aggiorna dominio se trovato nel brief e non già inserito
+        if (!proj.domain && proj.brief.domain) proj.domain = proj.brief.domain;
+        toast('Brief analizzato! Scheda compilata ✓', 'ok');
+      } catch(e) {
+        toast('Brief caricato ma analisi AI fallita: ' + e.message, 'info');
+      }
+      document.getElementById('ai-parsing').classList.remove('visible');
+      document.querySelector('.modal-footer').style.opacity = '';
+      document.querySelector('.modal-footer').style.pointerEvents = '';
+    } else {
+      // Salva il testo grezzo senza AI
+      proj.brief.rawText = newBriefText;
+      toast('Brief salvato. Configura Groq API per analisi automatica.', 'info');
+    }
+  }
+
+  progetti.unshift(proj);
+  await syncSave('hub_progetti', progetti);
+  logActivity('📁', `Progetto creato: ${name}`);
+  modalClose('modal-new');
+  resetModal();
+  renderProjects();
+
+  // Vai subito alla scheda
+  setTimeout(() => location.href = 'scheda.html?id=' + proj.id, 300);
+}
+
+// ── AI PARSE BRIEF ────────────────────────────────────────
+async function parseBriefWithAI(apiKey, text, projectName) {
+  document.getElementById('ai-parsing-text').textContent = 'Groq sta analizzando il brief…';
+
+  const prompt = `Analizza questo documento di brief per un progetto web e restituisci SOLO un oggetto JSON valido (nessun testo fuori dal JSON) con questa struttura esatta:
+
+{
+  "cliente": "",
+  "nomeCommerciale": "",
+  "settore": "",
+  "partitaIva": "",
+  "indirizzo": "",
+  "telefono": "",
+  "email": "",
+  "domain": "",
+  "facebook": "",
+  "instagram": "",
+  "competitor": "",
+  "titolarePrivacy": "",
+  "obiettivo": "",
+  "proposta": "",
+  "tonoVoce": "",
+  "aggettiviSi": "",
+  "aggettiviNo": "",
+  "target": "",
+  "palette": "",
+  "font": "",
+  "noteOperative": "",
+  "pagine": [
+    {"nome": "", "kwd": "", "kwdSecondarie": "", "sezioni": ""}
+  ]
+}
+
+Se un campo non è presente nel documento, lascialo come stringa vuota.
+Per "pagine" estrai ogni pagina del sito con nome, keyword principale, keyword secondarie e sezioni previste.
+
+DOCUMENTO:
+${text.slice(0, 6000)}`;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+    body: JSON.stringify({
+      model: 'llama-3.3-70b-versatile',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1,
+      max_tokens: 2000
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+
+  const raw = data.choices[0].message.content;
+  const clean = raw.replace(/```json|```/g,'').trim();
+  return JSON.parse(clean);
+}
+
+// ── CHECKLIST PER TIPO ────────────────────────────────────
+function buildChecklist(tipo) {
+  const base = [
+    { id:1, label:'Brief & Analisi',   done:false, checks:['Brief cliente completato','Analisi competitor','Obiettivi e KPI definiti','Budget e timeline concordati'] },
+    { id:2, label:'Wireframe',          done:false, checks:['Sitemap approvata','User flow definito','Wireframe low-fi completati','Approvazione cliente'] },
+    { id:3, label:'Design UI',          done:false, checks:['Moodboard condiviso','Palette e font approvati','Mockup desktop','Mockup mobile','Design system'] },
+    { id:4, label:'Sviluppo',           done:false, checks:['Setup ambiente dev','Frontend implementato','CMS configurato','Performance ottimizzata'] },
+    { id:5, label:'QA & Testing',       done:false, checks:['Test cross-browser','Check responsive','PageSpeed > 85','Link verificati','Revisione cliente'] },
+    { id:6, label:'Consegna',           done:false, checks:['Deploy produzione','Documentazione consegnata','Analytics attivi','Backup configurato'] },
+  ];
+  if (tipo === 'ecommerce') {
+    base[3].checks.push('WooCommerce / Shopify configurato','Pagamenti testati','Prodotti caricati');
+    base[4].checks.push('Test ordine completo','Email transazionali','GDPR e cookie');
+  }
+  return base;
+}
+
+// ── LOGO ─────────────────────────────────────────────────
+function handleLogo(input) {
+  const file = input.files[0]; if (!file) return;
+  if (file.size > 500*1024) { toast('Logo grande: verrà ridimensionato automaticamente', 'info'); }
+  
+  const reader = new FileReader();
+  reader.onload = e => {
+    // Comprimi il logo tramite canvas per non saturare localStorage
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 200;
+      const ratio = Math.min(MAX/img.width, MAX/img.height, 1);
+      canvas.width  = img.width  * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      newLogoData = canvas.toDataURL('image/jpeg', 0.82);
+      document.getElementById('logo-img').src = newLogoData;
+      document.getElementById('logo-img').style.display = 'block';
+      document.getElementById('logo-initials').style.display = 'none';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateLogoInitials() {
+  const name = document.getElementById('n-name').value.trim();
+  const initials = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() || '?';
+  document.getElementById('logo-initials').textContent = initials;
+}
+
+// ── BRIEF ─────────────────────────────────────────────────
+function handleBrief(input) {
+  const file = input.files[0]; if (!file) return;
+
+  // .docx è binario, non leggibile come testo diretto
+  if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+    toast('⚠️ Per i file Word: Salva come .txt (File → Salva come → Testo normale) e ricarica. In alternativa copia il testo del brief nel campo note dopo la creazione.', 'info', 6000);
+    // Salviamo comunque il nome per riferimento
+    newBriefFile = file;
+    newBriefText = null;
+    document.getElementById('brief-drop').style.display = 'none';
+    const loaded = document.getElementById('brief-loaded');
+    document.getElementById('brief-loaded-name').textContent = file.name + ' (converti in .txt per analisi AI)';
+    loaded.style.display = 'flex';
+    return;
+  }
+
+  newBriefFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    newBriefText = e.target.result;
+    document.getElementById('brief-drop').style.display = 'none';
+    const loaded = document.getElementById('brief-loaded');
+    document.getElementById('brief-loaded-name').textContent = file.name;
+    loaded.style.display = 'flex';
+  };
+  reader.readAsText(file);
+}
+
+function removeBrief() {
+  newBriefText = null; newBriefFile = null;
+  document.getElementById('brief-drop').style.display = 'block';
+  document.getElementById('brief-loaded').style.display = 'none';
+  document.getElementById('brief-file').value = '';
+}
+
+// drag & drop brief
+const bd = document.getElementById('brief-drop');
+bd.addEventListener('dragover', e => { e.preventDefault(); bd.classList.add('over'); });
+bd.addEventListener('dragleave', () => bd.classList.remove('over'));
+bd.addEventListener('drop', e => {
+  e.preventDefault(); bd.classList.remove('over');
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  const dt = new DataTransfer(); dt.items.add(file);
+  document.getElementById('brief-file').files = dt.files;
+  handleBrief(document.getElementById('brief-file'));
+});
+
+// ── TIPO ─────────────────────────────────────────────────
+function pickTipo(el) {
+  document.querySelectorAll('.tipo-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  tipoSelected = el.dataset.tipo;
+}
+
+function resetModal() {
+  newLogoData = null; newBriefText = null; newBriefFile = null; tipoSelected = 'vetrina';
+  document.getElementById('n-name').value = '';
+  document.getElementById('n-domain').value = '';
+  document.getElementById('n-wp-url').value = '';
+  document.getElementById('n-wp-user').value = '';
+  document.getElementById('logo-img').style.display = 'none';
+  document.getElementById('logo-initials').style.display = '';
+  document.getElementById('logo-initials').textContent = '?';
+  document.getElementById('brief-drop').style.display = 'block';
+  document.getElementById('brief-loaded').style.display = 'none';
+  document.getElementById('brief-file').value = '';
+  document.getElementById('logo-file').value = '';
+  document.getElementById('ai-parsing').classList.remove('visible');
+  document.querySelectorAll('.tipo-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('[data-tipo="vetrina"]').classList.add('active');
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function updateBadges() {
+  const attivi = progetti.filter(p=>p.status!=='completato').length;
+  document.getElementById('sb-badge-progetti').textContent = attivi;
+  document.getElementById('sb-badge-skills').textContent = store.get('hub_skills',[]).length;
+  document.getElementById('sb-badge-interventi').textContent = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length;
+  if (store.get('hub_groq_key','')) { document.getElementById('sb-api-dot').classList.remove('off'); document.getElementById('sb-api-label').textContent = 'Groq API configurata'; }
+}
+
+function logActivity(icon, text) {
+  const acts = store.get('hub_activity',[]);
+  acts.unshift({ icon, text, time: new Date().toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}) });
+  store.set('hub_activity', acts.slice(0,20));
+}
+
+renderProjects();
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

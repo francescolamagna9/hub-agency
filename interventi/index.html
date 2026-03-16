@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Interventi — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+/* status tabs */
+.status-tabs { display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap; }
+.stab { padding:7px 18px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; border:1px solid var(--glass-border); background:var(--glass-fill); color:var(--text-60); transition:all var(--transition); display:flex; align-items:center; gap:6px; }
+.stab.active-todo   { background:rgba(255,255,255,0.08); color:var(--text-100); border-color:var(--glass-border-hover); }
+.stab.active-doing  { background:rgba(251,191,36,0.15); color:var(--accent-gold); border-color:rgba(251,191,36,0.3); }
+.stab.active-done   { background:rgba(52,211,153,0.12); color:var(--accent-green); border-color:rgba(52,211,153,0.25); }
+.stab.active-tutti  { background:rgba(124,106,255,0.15); color:var(--accent-violet-soft); border-color:rgba(124,106,255,0.3); }
+.stab-count { font-size:10px; padding:1px 6px; border-radius:20px; background:rgba(255,255,255,0.08); }
+
+/* kanban-like list */
+.int-list { display:flex; flex-direction:column; gap:10px; }
+
+.int-card {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); padding:18px 20px;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  transition:all var(--transition); display:flex; gap:16px; align-items:flex-start;
+  position:relative; overflow:hidden;
+}
+.int-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--int-color); border-radius:var(--r-xl) 0 0 var(--r-xl); }
+.int-card:hover { border-color:var(--glass-border-hover); transform:translateX(3px); }
+
+.int-card-status-col { display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; padding-top:2px; }
+.int-status-icon { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; border:2px solid; flex-shrink:0; cursor:pointer; transition:all var(--transition); }
+.int-status-icon.todo  { border-color:var(--glass-border); color:var(--text-35); background:rgba(255,255,255,0.04); }
+.int-status-icon.doing { border-color:var(--accent-gold); color:var(--accent-gold); background:rgba(251,191,36,0.10); box-shadow:0 0 10px rgba(251,191,36,0.2); }
+.int-status-icon.done  { border-color:var(--accent-green); color:var(--accent-green); background:rgba(52,211,153,0.10); }
+.int-status-icon:hover { transform:scale(1.1); }
+
+.int-card-body { flex:1; min-width:0; }
+.int-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:6px; }
+.int-card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; line-height:1.3; }
+.int-card-actions { display:flex; gap:5px; flex-shrink:0; }
+.int-action-btn { background:none; border:1px solid var(--glass-border); color:var(--text-35); padding:4px 8px; border-radius:var(--r-sm); font-size:11px; cursor:pointer; transition:all var(--transition); }
+.int-action-btn:hover { background:var(--glass-fill-md); color:var(--text-100); }
+.int-action-btn.danger:hover { background:rgba(248,113,113,0.12); color:#f87171; border-color:rgba(248,113,113,0.25); }
+
+.int-card-client { display:inline-flex; align-items:center; gap:5px; font-size:12px; color:var(--accent-violet-soft); font-weight:600; margin-bottom:8px; }
+.int-card-desc { font-size:13px; color:var(--text-60); line-height:1.6; margin-bottom:10px; }
+.int-card-meta { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.int-meta-item { font-size:11px; color:var(--text-35); display:flex; align-items:center; gap:4px; }
+.int-type-tag { font-size:11px; padding:3px 9px; border-radius:20px; font-weight:600; }
+
+/* status colors */
+.int-card[data-status="todo"]  { --int-color: var(--text-35); }
+.int-card[data-status="doing"] { --int-color: var(--accent-gold); }
+.int-card[data-status="done"]  { --int-color: var(--accent-green); }
+
+/* type tag colors */
+.type-modifica   { background:rgba(124,106,255,0.14); color:var(--accent-violet-soft); border:1px solid rgba(124,106,255,0.22); }
+.type-aggiornamento { background:rgba(56,189,248,0.12); color:var(--accent-cyan); border:1px solid rgba(56,189,248,0.22); }
+.type-bug        { background:rgba(248,113,113,0.12); color:#f87171; border:1px solid rgba(248,113,113,0.22); }
+.type-contenuto  { background:rgba(52,211,153,0.12); color:var(--accent-green); border:1px solid rgba(52,211,153,0.22); }
+.type-seo        { background:rgba(251,191,36,0.12); color:var(--accent-gold); border:1px solid rgba(251,191,36,0.22); }
+.type-altro      { background:rgba(255,255,255,0.07); color:var(--text-60); border:1px solid var(--glass-border); }
+
+/* empty */
+.empty { text-align:center; padding:60px 20px; }
+.empty-icon { font-size:44px; margin-bottom:14px; opacity:.25; }
+.empty-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+.empty-sub { font-size:13px; color:var(--text-60); line-height:1.6; }
+
+/* modal */
+.modal-md { max-width:500px; }
+
+@media(max-width:600px){ .int-card { flex-direction:column; gap:12px; } .int-card-status-col { flex-direction:row; } }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="../progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📂</span><span class="nav-label">Archivio Template</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a>    <div style="margin-bottom:6px;padding:0 4px;">
+      <span class="sync-indicator sync-idle" id="sync-indicator">Sync non configurato</span>
+    </div>
+  <div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" onclick="location.href='../impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='../progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item active"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../dashboard/index.html'"><span class="bicon">🗂</span>Skill</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="page-eyebrow">Manutenzione & Modifiche</div>
+        <div class="page-title">🔧 Interventi</div>
+        <div class="page-sub">Tieni traccia di ogni modifica su siti esistenti. Registra, esegui, chiudi.</div>
+      </div>
+      <button class="btn btn-primary" onclick="modalOpen('modal-new')">＋ Nuovo Intervento</button>
+    </div>
+  </div>
+
+  <!-- STATUS TABS -->
+  <div class="status-tabs">
+    <div class="stab" data-f="tutti" onclick="setFilter('tutti',this)">Tutti <span class="stab-count" id="cnt-tutti">0</span></div>
+    <div class="stab" data-f="todo"  onclick="setFilter('todo',this)">○ Da fare <span class="stab-count" id="cnt-todo">0</span></div>
+    <div class="stab" data-f="doing" onclick="setFilter('doing',this)">⚡ In corso <span class="stab-count" id="cnt-doing">0</span></div>
+    <div class="stab" data-f="done"  onclick="setFilter('done',this)">✓ Completati <span class="stab-count" id="cnt-done">0</span></div>
+  </div>
+
+  <div class="int-list" id="int-list"></div>
+</main>
+
+<!-- MODAL NUOVO INTERVENTO -->
+<div class="modal-overlay" id="modal-new">
+  <div class="modal modal-md">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-int-title">🔧 Nuovo Intervento</div>
+      <button class="modal-close" onclick="closeNewModal()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Titolo Intervento <span style="color:var(--accent-violet-soft)">*</span></label>
+      <input class="form-input" type="text" id="i-title" placeholder="es. Aggiornamento menù navigazione…"/>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Cliente / Progetto</label>
+        <input class="form-input" type="text" id="i-client" placeholder="es. Taglia e Cuci Express" list="clienti-list"/>
+        <datalist id="clienti-list"></datalist>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" id="i-type">
+          <option value="modifica">🔧 Modifica</option>
+          <option value="aggiornamento">🔄 Aggiornamento</option>
+          <option value="bug">🐛 Bug Fix</option>
+          <option value="contenuto">📝 Contenuto</option>
+          <option value="seo">🔍 SEO</option>
+          <option value="altro">📌 Altro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descrizione</label>
+      <textarea class="form-textarea" id="i-desc" placeholder="Descrivi brevemente cosa va fatto…"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Priorità</label>
+        <select class="form-select" id="i-priority">
+          <option value="normale">Normale</option>
+          <option value="alta">🔴 Alta</option>
+          <option value="bassa">⚪ Bassa</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stato iniziale</label>
+        <select class="form-select" id="i-status">
+          <option value="todo">○ Da fare</option>
+          <option value="doing">⚡ In corso</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeNewModal()">Annulla</button>
+      <button class="btn btn-primary" onclick="saveIntervento()">🔧 Salva Intervento</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+let interventi = store.get('hub_interventi', []);
+let filterStatus = 'tutti';
+let editId = null;
+
+const TYPE_LABELS = { modifica:'Modifica', aggiornamento:'Aggiornamento', bug:'Bug Fix', contenuto:'Contenuto', seo:'SEO', altro:'Altro' };
+const TYPE_ICONS  = { modifica:'🔧', aggiornamento:'🔄', bug:'🐛', contenuto:'📝', seo:'🔍', altro:'📌' };
+const STATUS_ICONS = { todo:'○', doing:'⚡', done:'✓' };
+const STATUS_CYCLE = { todo:'doing', doing:'done', done:'todo' };
+
+// Popola datalist clienti dai progetti
+(function populateClienti() {
+  const progetti = store.get('hub_progetti', []);
+  const dl = document.getElementById('clienti-list');
+  dl.innerHTML = progetti.map(p => `<option value="${esc(p.name)}">`).join('');
+})();
+
+// ── FILTER ───────────────────────────────────────────────
+function setFilter(f, el) {
+  filterStatus = f;
+  document.querySelectorAll('.stab').forEach(t => { t.className = 'stab'; });
+  el.classList.add('active-' + f);
+  renderInterventi();
+}
+
+// ── RENDER ───────────────────────────────────────────────
+function renderInterventi() {
+  // Counts
+  const todo  = interventi.filter(i=>i.status==='todo').length;
+  const doing = interventi.filter(i=>i.status==='doing').length;
+  const done  = interventi.filter(i=>i.status==='done').length;
+  document.getElementById('cnt-tutti').textContent = interventi.length;
+  document.getElementById('cnt-todo').textContent  = todo;
+  document.getElementById('cnt-doing').textContent = doing;
+  document.getElementById('cnt-done').textContent  = done;
+
+  updateBadges();
+
+  const filtered = filterStatus === 'tutti' ? interventi : interventi.filter(i=>i.status===filterStatus);
+  const list = document.getElementById('int-list');
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty">
+      <div class="empty-icon">🔧</div>
+      <div class="empty-title">${interventi.length ? 'Nessun intervento qui' : 'Nessun intervento ancora'}</div>
+      <div class="empty-sub">${interventi.length ? 'Cambia filtro per vederne altri.' : 'Ogni modifica su un sito esistente la registri qui.<br/>Così non perdi il filo e hai uno storico del lavoro fatto.'}</div>
+    </div>`; return;
+  }
+
+  // Sort: doing first, then todo, then done
+  const sorted = [...filtered].sort((a,b) => {
+    const order = { doing:0, todo:1, done:2 };
+    return (order[a.status]||2) - (order[b.status]||2);
+  });
+
+  list.innerHTML = sorted.map(i => {
+    const dateStr = i.createdAt ? new Date(i.createdAt).toLocaleDateString('it',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '';
+    const updStr  = i.updatedAt ? new Date(i.updatedAt).toLocaleDateString('it',{day:'2-digit',month:'2-digit',year:'2-digit'}) : '';
+    const priorityBadge = i.priority === 'alta' ? '<span style="font-size:11px;color:#f87171;">🔴 Alta</span>' : '';
+
+    return `
+      <div class="int-card" data-status="${i.status}" data-id="${i.id}">
+        <div class="int-card-status-col">
+          <div class="int-status-icon ${i.status}" onclick="cycleStatus('${i.id}')" title="Cambia stato">
+            ${STATUS_ICONS[i.status]||'○'}
+          </div>
+        </div>
+        <div class="int-card-body">
+          <div class="int-card-top">
+            <div class="int-card-title">${esc(i.title)}</div>
+            <div class="int-card-actions">
+              <button class="int-action-btn" onclick="editIntervento('${i.id}')">✏️</button>
+              <button class="int-action-btn danger" onclick="deleteIntervento('${i.id}')">✕</button>
+            </div>
+          </div>
+          ${i.clientName ? `<div class="int-card-client">📁 ${esc(i.clientName)}</div>` : ''}
+          ${i.desc ? `<div class="int-card-desc">${esc(i.desc)}</div>` : ''}
+          <div class="int-card-meta">
+            <span class="int-type-tag type-${i.type||'altro'}">${TYPE_ICONS[i.type]||'📌'} ${TYPE_LABELS[i.type]||'Altro'}</span>
+            ${priorityBadge}
+            <span class="int-meta-item">📅 ${dateStr}</span>
+            ${i.status==='done' && updStr ? `<span class="int-meta-item">✓ ${updStr}</span>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ── CRUD ─────────────────────────────────────────────────
+async function saveIntervento() {
+  const title = document.getElementById('i-title').value.trim();
+  if (!title) { toast('Inserisci un titolo!', 'err'); return; }
+
+  const item = {
+    id:         editId || ('int_' + Date.now()),
+    title,
+    clientName: document.getElementById('i-client').value.trim(),
+    type:       document.getElementById('i-type').value,
+    desc:       document.getElementById('i-desc').value.trim(),
+    priority:   document.getElementById('i-priority').value,
+    status:     editId ? (interventi.find(i=>i.id===editId)?.status || document.getElementById('i-status').value) : document.getElementById('i-status').value,
+    createdAt:  editId ? (interventi.find(i=>i.id===editId)?.createdAt || Date.now()) : Date.now(),
+    updatedAt:  Date.now()
+  };
+
+  if (editId) {
+    const idx = interventi.findIndex(i => i.id === editId);
+    if (idx > -1) interventi[idx] = item;
+  } else {
+    interventi.unshift(item);
+    logActivity('🔧', `Intervento creato: ${title}${item.clientName ? ' — ' + item.clientName : ''}`);
+  }
+
+  await syncSave('hub_interventi', interventi);
+  closeNewModal();
+  renderInterventi();
+  toast(editId ? 'Intervento aggiornato!' : 'Intervento salvato!', 'ok');
+  editId = null;
+}
+
+async function cycleStatus(id) {
+  const item = interventi.find(i => i.id === id);
+  if (!item) return;
+  item.status = STATUS_CYCLE[item.status] || 'todo';
+  item.updatedAt = Date.now();
+  if (item.status === 'done') {
+    logActivity('✅', `Intervento completato: ${item.title}`);
+    toast('Intervento completato! ✓', 'ok');
+  }
+  await syncSave('hub_interventi', interventi);
+  renderInterventi();
+}
+
+function editIntervento(id) {
+  const item = interventi.find(i => i.id === id);
+  if (!item) return;
+  editId = id;
+  document.getElementById('modal-int-title').textContent = '✏️ Modifica Intervento';
+  document.getElementById('i-title').value    = item.title;
+  document.getElementById('i-client').value   = item.clientName || '';
+  document.getElementById('i-type').value     = item.type || 'modifica';
+  document.getElementById('i-desc').value     = item.desc || '';
+  document.getElementById('i-priority').value = item.priority || 'normale';
+  document.getElementById('i-status').value   = item.status || 'todo';
+  modalOpen('modal-new');
+}
+
+async function deleteIntervento(id) {
+  if (!confirm('Eliminare questo intervento?')) return;
+  interventi = interventi.filter(i => i.id !== id);
+  await syncSave('hub_interventi', interventi);
+  renderInterventi();
+  toast('Intervento eliminato', 'info');
+}
+
+function closeNewModal() {
+  editId = null;
+  document.getElementById('modal-int-title').textContent = '🔧 Nuovo Intervento';
+  ['i-title','i-client','i-desc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('i-type').value = 'modifica';
+  document.getElementById('i-priority').value = 'normale';
+  document.getElementById('i-status').value = 'todo';
+  modalClose('modal-new');
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function updateBadges() {
+  const aperti = interventi.filter(i=>i.status!=='done').length;
+  document.getElementById('sb-badge-interventi').textContent = aperti;
+  document.getElementById('sb-badge-progetti').textContent = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length;
+  if (store.get('hub_groq_key','')) { document.getElementById('sb-api-dot').classList.remove('off'); document.getElementById('sb-api-label').textContent = 'Groq API configurata'; }
+}
+
+function logActivity(icon, text) {
+  const acts = store.get('hub_activity',[]);
+  acts.unshift({ icon, text, time: new Date().toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}) });
+  store.set('hub_activity', acts.slice(0,20));
+}
+
+// Init
+document.querySelector('[data-f="tutti"]').classList.add('active-tutti');
+(async function init() {
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    try {
+      await GitHubSync.pullAll();
+      interventi = store.get('hub_interventi', []);
+    } catch(e) { console.warn('Sync pull failed:', e.message); }
+  }
+  renderInterventi();
+})();
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Impostazioni — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+.settings-layout {
+  max-width: 680px;
+}
+
+/* section card */
+.settings-section {
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.settings-section-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--glass-border);
+  display: flex; align-items: center; gap: 12px;
+}
+.settings-section-icon {
+  width: 38px; height: 38px; border-radius: var(--r-md); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+}
+.settings-section-title { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; }
+.settings-section-sub { font-size:12px; color:var(--text-60); margin-top:2px; }
+.settings-section-body { padding: 22px 24px; }
+
+/* field row */
+.settings-field { margin-bottom: 20px; }
+.settings-field:last-child { margin-bottom: 0; }
+.settings-field-label {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--text-60); margin-bottom: 8px;
+}
+.settings-field-hint { font-size: 11px; color: var(--text-35); margin-top: 6px; line-height: 1.5; }
+
+/* api key input row */
+.api-input-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.api-input-row .form-input { flex: 1; font-family: 'DM Mono', 'Courier New', monospace; font-size: 13px; letter-spacing: 0.5px; }
+.api-test-btn {
+  padding: 10px 16px; border-radius: var(--r-md); font-size: 12px; font-weight: 600;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  color: var(--text-60); cursor: pointer; white-space: nowrap; transition: all var(--transition); flex-shrink: 0;
+}
+.api-test-btn:hover { background: var(--glass-fill-md); color: var(--text-100); }
+
+/* status indicator */
+.api-status {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 14px; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 500; margin-top: 10px;
+  transition: all var(--transition);
+}
+.api-status.ok   { background: rgba(52,211,153,0.10); border: 1px solid rgba(52,211,153,0.22); color: var(--accent-green); }
+.api-status.err  { background: rgba(248,113,113,0.10); border: 1px solid rgba(248,113,113,0.22); color: #f87171; }
+.api-status.idle { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); color: var(--text-35); }
+.api-status-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.api-status.ok  .api-status-dot  { background: var(--accent-green); box-shadow: 0 0 6px var(--accent-green); }
+.api-status.err .api-status-dot  { background: #f87171; }
+.api-status.idle .api-status-dot { background: var(--text-35); }
+
+/* github row */
+.github-status {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--r-md);
+  font-size: 12px; margin-top: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); color: var(--text-35);
+}
+.github-status.connected { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.2); color: var(--accent-green); }
+
+/* data grid */
+.data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.data-card {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg); padding: 18px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.data-card-icon  { font-size: 22px; }
+.data-card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
+.data-card-sub   { font-size: 12px; color: var(--text-60); line-height: 1.5; }
+.data-card-stats { font-size: 11px; color: var(--text-35); }
+
+/* divider */
+.settings-divider { height: 1px; background: var(--glass-border); margin: 18px 0; }
+
+/* danger zone */
+.danger-zone {
+  background: rgba(248,113,113,0.05); border: 1px solid rgba(248,113,113,0.18);
+  border-radius: var(--r-xl); padding: 20px 24px; margin-top: 20px;
+}
+.danger-zone-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: #f87171; margin-bottom: 6px; }
+.danger-zone-sub { font-size: 12px; color: var(--text-60); margin-bottom: 16px; line-height: 1.5; }
+
+@media(max-width:600px) { .data-grid { grid-template-columns: 1fr; } .api-input-row { flex-direction: column; align-items: stretch; } }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="../progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📂</span><span class="nav-label">Archivio Template</span></a>
+  <div class="sidebar-sep"></div>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a>
+  <div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" id="sb-api-row" style="cursor:default;"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='../progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item active"><span class="bicon">⚙️</span>Settings</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="page-eyebrow">Configurazione</div>
+    <div class="page-title">⚙️ Impostazioni</div>
+    <div class="page-sub">Configura una volta sola. API key, GitHub e backup dati.</div>
+  </div>
+
+  <div class="settings-layout">
+
+    <!-- ── GROQ API ── -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-icon" style="background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.22);">🔑</div>
+        <div>
+          <div class="settings-section-title">Groq API Key</div>
+          <div class="settings-section-sub">Usata per generare Schede Prodotto AI e analizzare i brief dei progetti</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-field">
+          <div class="settings-field-label">
+            API Key
+            <a href="https://console.groq.com/keys" target="_blank" style="font-size:11px;color:var(--accent-gold);text-transform:none;letter-spacing:0;font-weight:500;">Ottieni gratis →</a>
+          </div>
+          <div class="api-input-row">
+            <input class="form-input" type="password" id="groq-key" placeholder="gsk_…" oninput="onGroqKeyChange()"/>
+            <button class="api-test-btn" onclick="testGroqKey()">Testa ⚡</button>
+            <button class="btn btn-primary btn-sm" onclick="saveGroqKey()">Salva</button>
+          </div>
+          <div class="api-status idle" id="groq-status">
+            <div class="api-status-dot"></div>
+            <span id="groq-status-text">Inserisci la key e clicca Testa per verificarla</span>
+          </div>
+          <div class="settings-field-hint">
+            La chiave viene salvata solo nel tuo browser (localStorage). Non viene mai trasmessa a server esterni ad eccezione di api.groq.com per le generazioni AI.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── GITHUB ── -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-icon" style="background:rgba(255,255,255,0.06); border:1px solid var(--glass-border);">🐙</div>
+        <div>
+          <div class="settings-section-title">GitHub Sync</div>
+          <div class="settings-section-sub">Sincronizza le tue skill con una repository GitHub</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+        <div class="settings-field">
+          <div class="settings-field-label">
+            Personal Access Token
+            <a href="https://github.com/settings/tokens/new?scopes=repo&description=AgencyHub" target="_blank" style="font-size:11px;color:var(--accent-violet-soft);text-transform:none;letter-spacing:0;font-weight:500;">Crea token →</a>
+          </div>
+          <div class="api-input-row">
+            <input class="form-input" type="password" id="gh-token" placeholder="ghp_…"/>
+          </div>
+          <div class="settings-field-hint">
+            GitHub → Settings → Developer settings → Personal access tokens (classic) → scope: <strong>repo</strong>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="settings-field">
+            <div class="settings-field-label">Repository</div>
+            <input class="form-input" type="text" id="gh-repo" placeholder="username/agency-hub"/>
+            <div class="settings-field-hint">formato: tuonome/nome-repo</div>
+          </div>
+          <div class="settings-field">
+            <div class="settings-field-label">Branch</div>
+            <input class="form-input" type="text" id="gh-branch" placeholder="main"/>
+          </div>
+        </div>
+
+        <div class="github-status idle" id="gh-status">
+          <span>⚪</span> <span id="gh-status-text">Non configurato</span>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="saveGitHub()">💾 Salva</button>
+          <button class="btn btn-ghost" onclick="testGitHub()">🔍 Testa connessione</button>
+          <button class="btn btn-ghost" onclick="manualSync()" id="btn-manual-sync" style="display:none;">⟳ Sync ora</button>
+        </div>
+
+        <div id="last-sync-row" style="display:none;margin-top:10px;font-size:11px;color:var(--text-35);">
+          Ultima sincronizzazione: <span id="last-sync-time">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DATI ── -->
+    <div class="settings-section">
+      <div class="settings-section-header">
+        <div class="settings-section-icon" style="background:rgba(56,189,248,0.10); border:1px solid rgba(56,189,248,0.22);">💾</div>
+        <div>
+          <div class="settings-section-title">Backup & Ripristino Dati</div>
+          <div class="settings-section-sub">Esporta tutto in un file JSON. Importa per ripristinare su un altro browser o device.</div>
+        </div>
+      </div>
+      <div class="settings-section-body">
+
+        <!-- stats -->
+        <div class="data-grid" style="margin-bottom:20px;">
+          <div class="data-card">
+            <div class="data-card-icon">📁</div>
+            <div class="data-card-title">Progetti</div>
+            <div class="data-card-sub">Schede, brief estratti, link e checklist</div>
+            <div class="data-card-stats" id="stat-progetti">0 progetti</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-icon">🔧</div>
+            <div class="data-card-title">Interventi</div>
+            <div class="data-card-sub">Log completo modifiche e manutenzioni</div>
+            <div class="data-card-stats" id="stat-interventi">0 interventi</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-icon">🗂</div>
+            <div class="data-card-title">Skill & Archivio</div>
+            <div class="data-card-sub">Procedure, template, prompt AI</div>
+            <div class="data-card-stats" id="stat-skill-arch">0 skill · 0 template</div>
+          </div>
+          <div class="data-card">
+            <div class="data-card-icon">⚡</div>
+            <div class="data-card-title">Attività</div>
+            <div class="data-card-sub">Log attività e statistiche uso</div>
+            <div class="data-card-stats" id="stat-activity">0 voci</div>
+          </div>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- export -->
+        <div style="margin-bottom:18px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">⬇ Esporta Backup</div>
+          <div style="font-size:13px;color:var(--text-60);margin-bottom:12px;line-height:1.6;">
+            Scarica un file JSON con tutti i tuoi dati: progetti, interventi, skill, archivio, roadmap e impostazioni. Tienilo al sicuro.
+          </div>
+          <button class="btn btn-primary" onclick="exportData()">⬇ Scarica backup.json</button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <!-- import -->
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:6px;">⬆ Importa Backup</div>
+          <div style="font-size:13px;color:var(--text-60);margin-bottom:12px;line-height:1.6;">
+            Ripristina da un backup precedente. <strong style="color:#f87171;">Attenzione:</strong> sovrascrive tutti i dati attuali.
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Scegli file .json</button>
+            <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)"/>
+            <span style="font-size:12px;color:var(--text-35);" id="import-status"></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DANGER ZONE -->
+    <div class="danger-zone">
+      <div class="danger-zone-title">⚠️ Zona Pericolosa</div>
+      <div class="danger-zone-sub">Queste azioni sono irreversibili. Fai un backup prima di procedere.</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-danger btn-sm" onclick="clearSection('progetti')">Elimina tutti i Progetti</button>
+        <button class="btn btn-danger btn-sm" onclick="clearSection('interventi')">Elimina tutti gli Interventi</button>
+        <button class="btn btn-danger btn-sm" onclick="clearAll()">Reset completo Hub</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+// ── INIT ─────────────────────────────────────────────────
+(function init() {
+  // Carica key salvata
+  const groqKey = store.get('hub_groq_key', '');
+  if (groqKey) {
+    document.getElementById('groq-key').value = groqKey;
+    setGroqStatus('ok', 'API Key configurata e salvata');
+  }
+
+  // Carica GitHub
+  const gh = store.get('hub_github', {});
+  if (gh.token)  document.getElementById('gh-token').value  = gh.token;
+  if (gh.repo)   document.getElementById('gh-repo').value   = gh.repo;
+  if (gh.branch) document.getElementById('gh-branch').value = gh.branch || 'main';
+  if (gh.token && gh.repo) {
+    document.getElementById('gh-status').className = 'github-status connected';
+    document.getElementById('gh-status-text').textContent = 'Configurato: ' + gh.repo + ' (' + (gh.branch||'main') + ')';
+    document.getElementById('btn-manual-sync').style.display = 'inline-flex';
+    document.getElementById('last-sync-row').style.display = 'block';
+    document.getElementById('last-sync-time').textContent = GitHubSync.getLastSync();
+  }
+
+  // Stats
+  const progetti   = store.get('hub_progetti', []);
+  const interventi = store.get('hub_interventi', []);
+  const skills     = store.get('hub_skills', []);
+  const archivio   = store.get('hub_archivio', []);
+  const activity   = store.get('hub_activity', []);
+
+  document.getElementById('stat-progetti').textContent   = progetti.length + ' progetti';
+  document.getElementById('stat-interventi').textContent = interventi.length + ' interventi';
+  document.getElementById('stat-skill-arch').textContent = skills.length + ' skill · ' + archivio.length + ' template';
+  document.getElementById('stat-activity').textContent   = activity.length + ' voci';
+
+  // Sidebar badges
+  document.getElementById('sb-badge-progetti').textContent   = progetti.filter(p=>p.status!=='completato').length;
+  document.getElementById('sb-badge-interventi').textContent = interventi.filter(i=>i.status!=='done').length;
+  if (groqKey) { document.getElementById('sb-api-dot').classList.remove('off'); document.getElementById('sb-api-label').textContent = 'Groq API configurata'; }
+})();
+
+// ── GROQ ─────────────────────────────────────────────────
+function onGroqKeyChange() {
+  setGroqStatus('idle', 'Clicca Testa per verificare la key');
+}
+
+function saveGroqKey() {
+  const key = document.getElementById('groq-key').value.trim();
+  if (!key) { toast('Inserisci una API Key!', 'err'); return; }
+  store.set('hub_groq_key', key);
+  setGroqStatus('ok', 'API Key salvata ✓');
+  document.getElementById('sb-api-dot').classList.remove('off');
+  document.getElementById('sb-api-label').textContent = 'Groq API configurata';
+  toast('API Key salvata!', 'ok');
+}
+
+async function testGroqKey() {
+  const key = document.getElementById('groq-key').value.trim();
+  if (!key) { toast('Inserisci prima la API Key!', 'err'); return; }
+
+  setGroqStatus('idle', 'Test in corso…');
+  document.querySelector('.api-test-btn').textContent = '…';
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: 'Rispondi solo: OK' }],
+        max_tokens: 5
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+
+    setGroqStatus('ok', 'Connessione riuscita — API Key valida ✓');
+    store.set('hub_groq_key', key);
+    document.getElementById('sb-api-dot').classList.remove('off');
+    document.getElementById('sb-api-label').textContent = 'Groq API configurata';
+    toast('API Key valida! ✓', 'ok');
+  } catch(e) {
+    setGroqStatus('err', 'Errore: ' + e.message);
+    toast('Chiave non valida', 'err');
+  }
+
+  document.querySelector('.api-test-btn').textContent = 'Testa ⚡';
+}
+
+function setGroqStatus(type, msg) {
+  const el = document.getElementById('groq-status');
+  el.className = 'api-status ' + type;
+  document.getElementById('groq-status-text').textContent = msg;
+}
+
+// ── GITHUB ───────────────────────────────────────────────
+function saveGitHub() {
+  const token  = document.getElementById('gh-token').value.trim();
+  const repo   = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+
+  if (!token || !repo) { toast('Inserisci token e nome repository!', 'err'); return; }
+
+  store.set('hub_github', { token, repo, branch });
+  document.getElementById('gh-status').className = 'github-status connected';
+  document.getElementById('gh-status-text').textContent = 'Configurato: ' + repo + ' (' + branch + ')';
+  document.getElementById('btn-manual-sync').style.display = 'inline-flex';
+  document.getElementById('last-sync-row').style.display = 'block';
+  document.getElementById('last-sync-time').textContent = GitHubSync.getLastSync();
+  toast('GitHub salvato! Clicca "Testa connessione" per verificare.', 'ok');
+}
+
+async function testGitHub() {
+  const token  = document.getElementById('gh-token').value.trim();
+  const repo   = document.getElementById('gh-repo').value.trim();
+  const branch = document.getElementById('gh-branch').value.trim() || 'main';
+  if (!token || !repo) { toast('Inserisci token e repo prima!', 'err'); return; }
+
+  document.getElementById('gh-status-text').textContent = 'Test in corso…';
+
+  // Salva temporaneamente per usare GitHubSync
+  store.set('hub_github', { token, repo, branch });
+
+  try {
+    const info = await GitHubSync.testConnection();
+    const statusEl = document.getElementById('gh-status');
+    statusEl.className = 'github-status connected';
+    document.getElementById('gh-status-text').textContent =
+      `✓ Connesso: ${info.name} ${info.private ? '🔒 Privata' : '🌐 Pubblica'} · branch: ${info.branch}`;
+    document.getElementById('btn-manual-sync').style.display = 'inline-flex';
+    document.getElementById('last-sync-row').style.display = 'block';
+    document.getElementById('last-sync-time').textContent = GitHubSync.getLastSync();
+
+    // Init data folder on first connection
+    await GitHubSync.initDataFolder();
+    toast('GitHub connesso! ✓', 'ok');
+  } catch(e) {
+    document.getElementById('gh-status').className = 'github-status';
+    document.getElementById('gh-status-text').textContent = '✕ ' + e.message;
+    toast('Connessione fallita: ' + e.message, 'err');
+  }
+}
+
+async function manualSync() {
+  const btn = document.getElementById('btn-manual-sync');
+  btn.textContent = '⟳ Sincronizzazione…';
+  btn.style.opacity = '.6';
+  try {
+    await GitHubSync.pushAll();
+    document.getElementById('last-sync-time').textContent = GitHubSync.getLastSync();
+  } finally {
+    btn.textContent = '⟳ Sync ora';
+    btn.style.opacity = '';
+  }
+}
+
+// ── EXPORT ───────────────────────────────────────────────
+function exportData() {
+  const backup = {
+    version:    '2.0',
+    exportedAt: new Date().toISOString(),
+    data: {
+      hub_progetti:   store.get('hub_progetti',   []),
+      hub_interventi: store.get('hub_interventi', []),
+      hub_skills:     store.get('hub_skills',     []),
+      hub_archivio:   store.get('hub_archivio',   []),
+      hub_roadmap:    store.get('hub_roadmap',     null),
+      hub_activity:   store.get('hub_activity',   []),
+      hub_stats:      store.get('hub_stats',       {}),
+    }
+    // Note: API key e token GitHub NON vengono esportati per sicurezza
+  };
+
+  const json     = JSON.stringify(backup, null, 2);
+  const date     = new Date().toLocaleDateString('it').replace(/\//g,'-');
+  downloadFile(`agency-hub-backup-${date}.json`, json, 'application/json');
+  toast('Backup esportato!', 'ok');
+  logActivity('💾', 'Backup dati esportato');
+}
+
+// ── IMPORT ───────────────────────────────────────────────
+function importData(input) {
+  const file = input.files[0]; if (!file) return;
+
+  if (!confirm('Importare questo backup? Tutti i dati attuali verranno sostituiti.')) {
+    input.value = ''; return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if (!backup.data) throw new Error('File non valido — struttura non riconosciuta');
+
+      // Ripristina tutti i dati
+      const d = backup.data;
+      if (d.hub_progetti)   store.set('hub_progetti',   d.hub_progetti);
+      if (d.hub_interventi) store.set('hub_interventi', d.hub_interventi);
+      if (d.hub_skills)     store.set('hub_skills',     d.hub_skills);
+      if (d.hub_archivio)   store.set('hub_archivio',   d.hub_archivio);
+      if (d.hub_roadmap)    store.set('hub_roadmap',    d.hub_roadmap);
+      if (d.hub_activity)   store.set('hub_activity',   d.hub_activity);
+      if (d.hub_stats)      store.set('hub_stats',      d.hub_stats);
+
+      const exported = backup.exportedAt ? new Date(backup.exportedAt).toLocaleDateString('it') : 'data sconosciuta';
+      document.getElementById('import-status').textContent = '✓ Importato (backup del ' + exported + ')';
+      document.getElementById('import-status').style.color = 'var(--accent-green)';
+      toast('Backup importato con successo!', 'ok');
+
+      // Ricarica stats
+      setTimeout(() => location.reload(), 1200);
+    } catch(err) {
+      document.getElementById('import-status').textContent = '✕ ' + err.message;
+      document.getElementById('import-status').style.color = '#f87171';
+      toast('Import fallito: ' + err.message, 'err');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── RESET ────────────────────────────────────────────────
+async function clearSection(key) {
+  const labels = { progetti: 'tutti i Progetti', interventi: 'tutti gli Interventi' };
+  if (!confirm('Eliminare ' + labels[key] + '? Questa azione è irreversibile.')) return;
+  store.set('hub_' + key, []);
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    await GitHubSync.pushKey('hub_' + key).catch(() => {});
+  }
+  toast(labels[key] + ' eliminati', 'info');
+  setTimeout(() => location.reload(), 800);
+}
+
+function clearAll() {
+  if (!confirm('ATTENZIONE: eliminare TUTTI i dati dell\'hub?\n\nProggetti, interventi, skill, archivio e roadmap saranno cancellati.\n\nHai fatto un backup?')) return;
+  if (!confirm('Sei sicuro? Non si torna indietro.')) return;
+  const keysToReset = ['hub_progetti','hub_interventi','hub_skills','hub_archivio','hub_roadmap','hub_activity','hub_stats'];
+  keysToReset.forEach(k => store.set(k, []));
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    GitHubSync.pushAll().catch(() => {});
+  }
+  keysToReset.forEach(k => store.remove(k));
+  toast('Hub resettato', 'info');
+  setTimeout(() => location.href = '../index.html', 1000);
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function logActivity(icon, text) {
+  const acts = store.get('hub_activity',[]);
+  acts.unshift({ icon, text, time: new Date().toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'}) });
+  store.set('hub_activity', acts.slice(0,20));
+}
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

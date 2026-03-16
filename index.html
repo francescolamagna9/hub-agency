@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Agency Hub — Home</title>
+<link rel="stylesheet" href="assets/css/base.css"/>
+<style>
+.greeting-wrap { margin-bottom: 32px; }
+.greeting-eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent-violet-soft); font-weight: 600; margin-bottom: 8px; }
+.greeting-title {
+  font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800;
+  letter-spacing: -1px; line-height: 1.1;
+  background: linear-gradient(135deg, var(--text-100) 0%, var(--accent-violet-soft) 45%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.greeting-sub { color: var(--text-60); font-size: 14px; margin-top: 8px; }
+
+/* stats */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--glass-fill); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border); border-radius: var(--r-xl);
+  padding: 20px 18px; position: relative; overflow: hidden;
+  transition: transform var(--transition), border-color var(--transition); cursor: default;
+}
+.stat-card:hover { transform: translateY(-2px); border-color: var(--glass-border-hover); }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; border-radius: var(--r-xl) var(--r-xl) 0 0; background: var(--stat-line); }
+.stat-icon { font-size: 20px; margin-bottom: 10px; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; }
+.stat-label { font-size: 12px; color: var(--text-60); margin-top: 2px; font-weight: 500; }
+
+/* home layout */
+.home-layout { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+
+/* active work */
+.work-section { margin-bottom: 24px; }
+.section-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.section-title-count { font-size: 11px; background: rgba(124,106,255,0.15); color: var(--accent-violet-soft); border: 1px solid rgba(124,106,255,0.25); padding: 2px 8px; border-radius: 20px; }
+
+/* progetto card home */
+.proj-home-card {
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl); padding: 18px 20px;
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer; transition: all var(--transition); margin-bottom: 10px;
+  text-decoration: none; color: inherit;
+}
+.proj-home-card:hover { border-color: var(--glass-border-hover); transform: translateX(4px); }
+.proj-logo {
+  width: 48px; height: 48px; border-radius: var(--r-md); flex-shrink: 0;
+  background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; font-family: 'Syne', sans-serif;
+  color: #fff; overflow: hidden;
+}
+.proj-logo img { width: 100%; height: 100%; object-fit: cover; }
+.proj-info { flex: 1; min-width: 0; }
+.proj-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.proj-domain { font-size: 12px; color: var(--text-35); margin-top: 2px; }
+.proj-phase { font-size: 11px; color: var(--accent-violet-soft); margin-top: 4px; font-weight: 600; }
+.proj-bar-wrap { margin-top: 6px; }
+.proj-bar { height: 3px; background: rgba(255,255,255,0.08); border-radius: 10px; overflow: hidden; }
+.proj-bar-fill { height: 100%; border-radius: 10px; background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan)); }
+.proj-pct { font-size: 10px; color: var(--text-35); margin-top: 3px; }
+
+/* intervento card home */
+.int-home-card {
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg); padding: 14px 18px;
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  display: flex; align-items: center; gap: 14px;
+  cursor: pointer; transition: all var(--transition); margin-bottom: 8px;
+  text-decoration: none; color: inherit;
+}
+.int-home-card:hover { border-color: rgba(251,191,36,0.3); transform: translateX(4px); }
+.int-status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.int-status-dot.todo    { background: var(--text-35); }
+.int-status-dot.doing   { background: var(--accent-gold); box-shadow: 0 0 6px var(--accent-gold); }
+.int-status-dot.done    { background: var(--accent-green); }
+.int-info { flex: 1; min-width: 0; }
+.int-title { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.int-client { font-size: 11px; color: var(--text-35); margin-top: 2px; }
+.int-date { font-size: 11px; color: var(--text-35); flex-shrink: 0; }
+
+/* modules grid */
+.modules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.module-card {
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl); padding: 20px;
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+  cursor: pointer; transition: all var(--transition);
+  text-decoration: none; display: block; color: inherit; position: relative; overflow: hidden;
+}
+.module-card:hover { border-color: var(--glass-border-hover); transform: translateY(-2px); }
+.module-glow { position: absolute; width: 80px; height: 80px; border-radius: 50%; top: -20px; right: -20px; pointer-events: none; background: var(--glow); filter: blur(30px); opacity: 0.25; }
+.module-icon { font-size: 22px; margin-bottom: 8px; }
+.module-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+.module-desc { font-size: 11px; color: var(--text-60); line-height: 1.5; }
+
+/* activity */
+.activity-list { display: flex; flex-direction: column; gap: 6px; }
+.act-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: var(--r-lg);
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  font-size: 12px; color: var(--text-60); transition: border-color var(--transition);
+}
+.act-item:hover { border-color: var(--glass-border-hover); }
+.act-icon { font-size: 14px; flex-shrink: 0; }
+.act-text { flex: 1; }
+.act-time { font-size: 10px; color: var(--text-35); flex-shrink: 0; }
+
+@media(max-width:1100px) { .home-layout { grid-template-columns: 1fr; } }
+@media(max-width:900px)  { .stats-row { grid-template-columns: repeat(2,1fr); } }
+@media(max-width:768px)  { .modules-grid { grid-template-columns: 1fr; } .greeting-title { font-size: 26px; } }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span><span class="nav-badge" id="sb-badge-skills">0</span></a>
+  <a class="nav-item" href="roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap</span></a>
+  <a class="nav-item" href="schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="archivio/index.html"><span class="nav-icon">📂</span><span class="nav-label">Archivio Template</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a><div class="sidebar-footer">
+    <div class="sidebar-footer-ver">Agency Hub v2.0</div>
+    <div style="margin-bottom:6px;padding:0 4px;">
+      <span class="sync-indicator sync-idle" id="sync-indicator" title="Stato sincronizzazione">Non sincronizzato</span>
+    </div>
+    <div class="sidebar-footer-api" onclick="location.href='impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item active" onclick="location.href='index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='impostazioni/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='dashboard/index.html'"><span class="bicon">🗂</span>Skill</button>
+</div></div>
+
+<main class="main-content">
+  <div class="greeting-wrap fade-up">
+    <div class="greeting-eyebrow">Bentornato nel tuo</div>
+    <div class="greeting-title">Agency Hub</div>
+    <div class="greeting-sub">Tutto il tuo lavoro in un posto solo. Progetti, interventi, skill e strumenti AI.</div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row fade-up">
+    <div class="stat-card" style="--stat-line:linear-gradient(90deg,var(--accent-violet),var(--accent-violet-soft)); cursor:pointer;" onclick="location.href='progetti/index.html'">
+      <div class="stat-icon">📁</div>
+      <div class="stat-value" id="stat-progetti">0</div>
+      <div class="stat-label">Progetti attivi</div>
+    </div>
+    <div class="stat-card" style="--stat-line:linear-gradient(90deg,var(--accent-gold),#fcd34d); cursor:pointer;" onclick="location.href='interventi/index.html'">
+      <div class="stat-icon">🔧</div>
+      <div class="stat-value" id="stat-interventi">0</div>
+      <div class="stat-label">Interventi aperti</div>
+    </div>
+    <div class="stat-card" style="--stat-line:linear-gradient(90deg,var(--accent-cyan),#7dd3fc); cursor:pointer;" onclick="location.href='dashboard/index.html'">
+      <div class="stat-icon">🗂</div>
+      <div class="stat-value" id="stat-skills">0</div>
+      <div class="stat-label">Skill salvate</div>
+    </div>
+    <div class="stat-card" style="--stat-line:linear-gradient(90deg,var(--accent-pink),#fb7185); cursor:pointer;" onclick="location.href='impostazioni/index.html'">
+      <div class="stat-icon">✦</div>
+      <div class="stat-value" id="stat-schede">0</div>
+      <div class="stat-label">Schede generate</div>
+    </div>
+  </div>
+
+  <div class="home-layout">
+    <div>
+      <!-- PROGETTI ATTIVI -->
+      <div class="work-section">
+        <div class="section-title">
+          📁 Progetti Attivi
+          <span class="section-title-count" id="cnt-progetti">0</span>
+          <a href="progetti/index.html" style="margin-left:auto;font-size:12px;color:var(--accent-violet-soft);">Vedi tutti →</a>
+        </div>
+        <div id="progetti-list">
+          <div style="text-align:center;padding:28px;color:var(--text-35);font-size:13px;background:var(--glass-fill);border:1px solid var(--glass-border);border-radius:var(--r-xl);">
+            <div style="font-size:28px;margin-bottom:8px;opacity:.3;">📁</div>
+            Nessun progetto attivo.<br/>
+            <a href="progetti/index.html" style="color:var(--accent-violet-soft);">Crea il primo →</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERVENTI APERTI -->
+      <div class="work-section">
+        <div class="section-title">
+          🔧 Interventi Aperti
+          <span class="section-title-count" id="cnt-interventi">0</span>
+          <a href="interventi/index.html" style="margin-left:auto;font-size:12px;color:var(--accent-gold);">Vedi tutti →</a>
+        </div>
+        <div id="interventi-list">
+          <div style="text-align:center;padding:24px;color:var(--text-35);font-size:13px;background:var(--glass-fill);border:1px solid var(--glass-border);border-radius:var(--r-xl);">
+            <div style="font-size:24px;margin-bottom:8px;opacity:.3;">🔧</div>
+            Nessun intervento aperto.
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUMENTI -->
+      <div class="section-title" style="margin-top:8px;">⚡ Strumenti</div>
+      <div class="modules-grid">
+        <a class="module-card" href="schede-prodotto/index.html">
+          <div class="module-glow" style="--glow:var(--accent-pink)"></div>
+          <div class="module-icon">✦</div>
+          <div class="module-name">Schede Prodotto AI</div>
+          <div class="module-desc">Genera schede SEO in secondi</div>
+        </a>
+        <a class="module-card" href="dashboard/index.html">
+          <div class="module-glow" style="--glow:var(--accent-violet)"></div>
+          <div class="module-icon">🗂</div>
+          <div class="module-name">Skill & Procedure</div>
+          <div class="module-desc">Le tue competenze operative</div>
+        </a>
+        <a class="module-card" href="archivio/index.html">
+          <div class="module-glow" style="--glow:var(--accent-gold)"></div>
+          <div class="module-icon">📂</div>
+          <div class="module-name">Archivio Template</div>
+          <div class="module-desc">Template, prompt e brief riutilizzabili</div>
+        </a>
+        <a class="module-card" href="roadmap/index.html">
+          <div class="module-glow" style="--glow:var(--accent-cyan)"></div>
+          <div class="module-icon">🗺</div>
+          <div class="module-name">Roadmap</div>
+          <div class="module-desc">Processo operativo web project</div>
+        </a>
+      </div>
+    </div>
+
+    <!-- SIDEBAR DESTRA -->
+    <div>
+      <div class="card" style="position:sticky;top:20px;">
+        <div class="flex items-center justify-between" style="margin-bottom:16px;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;">Attività Recente</div>
+          <button class="btn btn-ghost btn-sm" onclick="clearActivity()">Pulisci</button>
+        </div>
+        <div class="activity-list" id="activity-list">
+          <div style="text-align:center;padding:28px 0;color:var(--text-35);font-size:12px;">
+            <div style="font-size:24px;margin-bottom:8px;opacity:.3;">⏱</div>
+            Nessuna attività ancora.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/github-sync.js"></script>
+<script src="assets/js/core.js"></script>
+<script>
+(function init() {
+  // Badges e stats
+  const progetti   = store.get('hub_progetti', []);
+  const interventi = store.get('hub_interventi', []);
+  const skills     = store.get('hub_skills', []);
+  const schede     = store.get('hub_stats', {}).schede || 0;
+
+  const progettiAttivi    = progetti.filter(p => p.status !== 'completato');
+  const interventiAperti  = interventi.filter(i => i.status !== 'done');
+
+  document.getElementById('stat-progetti').textContent   = progettiAttivi.length;
+  document.getElementById('stat-interventi').textContent = interventiAperti.length;
+  document.getElementById('stat-skills').textContent     = skills.length;
+  document.getElementById('stat-schede').textContent     = schede;
+
+  document.getElementById('sb-badge-progetti').textContent   = progettiAttivi.length;
+  document.getElementById('sb-badge-interventi').textContent = interventiAperti.length;
+  document.getElementById('sb-badge-skills').textContent     = skills.length;
+  document.getElementById('cnt-progetti').textContent        = progettiAttivi.length;
+  document.getElementById('cnt-interventi').textContent      = interventiAperti.length;
+
+  if (store.get('hub_groq_key','')) {
+    document.getElementById('sb-api-dot').classList.remove('off');
+    document.getElementById('sb-api-label').textContent = 'Groq API configurata';
+  }
+
+  // Render progetti attivi
+  renderProgettiAttivi(progettiAttivi);
+  renderInterventiAperti(interventiAperti);
+})();
+
+function renderProgettiAttivi(list) {
+  if (!list || !list.length) return;
+  const PHASES = ['Brief & Analisi','Wireframe','Design UI','Sviluppo','QA & Testing','Consegna'];
+  if (list.length) {
+    document.getElementById('progetti-list').innerHTML = list.slice(0,3).map(p => {
+      const done = (p.checklist||[]).filter(c=>c.done).length;
+      const total = (p.checklist||[]).length || 6;
+      const pct = Math.round(done/total*100);
+      const phase = PHASES[Math.min(done, 5)];
+      const initials = (p.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+      return `
+        <a class="proj-home-card" href="progetti/scheda.html?id=${p.id}">
+          <div class="proj-logo">
+            ${p.logo ? `<img src="${p.logo}" alt="${esc(p.name)}"/>` : initials}
+          </div>
+          <div class="proj-info">
+            <div class="proj-name">${esc(p.name)}</div>
+            <div class="proj-domain">${esc(p.domain||'')}</div>
+            <div class="proj-phase">⚡ ${esc(phase)}</div>
+            <div class="proj-bar-wrap">
+              <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%"></div></div>
+              <div class="proj-pct">${done}/${total} fasi</div>
+            </div>
+          </div>
+        </a>`;
+    }).join('');
+  }
+}
+
+function renderInterventiAperti(list) {
+  if (!list || !list.length) return;
+  if (list.length) {
+    document.getElementById('interventi-list').innerHTML = list.slice(0,4).map(i => {
+      const statusClass = i.status === 'doing' ? 'doing' : i.status === 'done' ? 'done' : 'todo';
+      const dateStr = i.createdAt ? new Date(i.createdAt).toLocaleDateString('it',{day:'2-digit',month:'2-digit'}) : '';
+      return `
+        <a class="int-home-card" href="interventi/index.html">
+          <div class="int-status-dot ${statusClass}"></div>
+          <div class="int-info">
+            <div class="int-title">${esc(i.title)}</div>
+            <div class="int-client">${esc(i.clientName||'')}</div>
+          </div>
+          <div class="int-date">${dateStr}</div>
+        </a>`;
+    }).join('');
+  }
+
+  // GitHub Sync — pull all data on startup
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    GitHubSync.pullAll().then(ok => {
+      if (ok) {
+        // Reload stats after sync
+        const p2 = store.get('hub_progetti', []);
+        const i2 = store.get('hub_interventi', []);
+        document.getElementById('stat-progetti').textContent   = p2.filter(p=>p.status!=='completato').length;
+        document.getElementById('stat-interventi').textContent = i2.filter(i=>i.status!=='done').length;
+        document.getElementById('stat-skills').textContent     = store.get('hub_skills',[]).length;
+        document.getElementById('sb-badge-progetti').textContent   = p2.filter(p=>p.status!=='completato').length;
+        document.getElementById('sb-badge-interventi').textContent = i2.filter(i=>i.status!=='done').length;
+        renderProgettiAttivi(p2);
+        renderInterventiAperti(i2);
+      }
+    });
+  }
+
+  // Activity
+  const acts = store.get('hub_activity', []);
+  if (acts.length) {
+    document.getElementById('activity-list').innerHTML = acts.slice(0,8).map(a =>
+      `<div class="act-item"><span class="act-icon">${a.icon}</span><span class="act-text">${esc(a.text)}</span><span class="act-time">${a.time}</span></div>`
+    ).join('');
+  }
+})();
+
+function clearActivity() {
+  store.remove('hub_activity');
+  location.reload();
+}
+</script>
+</body>
+</html>

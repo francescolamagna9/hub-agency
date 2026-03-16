@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Scheda Progetto — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+/* ── PROJECT HEADER ── */
+.proj-header {
+  background: var(--glass-fill); border: 1px solid var(--glass-border);
+  border-radius: var(--r-xl); padding: 22px 26px; margin-bottom: 6px;
+  backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur);
+}
+.proj-header-top { display:flex; align-items:center; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+.proj-header-logo {
+  width:56px; height:56px; border-radius:var(--r-md); flex-shrink:0; overflow:hidden;
+  background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan));
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:rgba(255,255,255,0.7);
+  cursor:pointer; border:2px solid var(--glass-border); transition:border-color var(--transition);
+}
+.proj-header-logo:hover { border-color:rgba(124,106,255,0.5); }
+.proj-header-logo img { width:100%; height:100%; object-fit:cover; }
+.proj-header-info { flex:1; min-width:0; }
+.proj-header-name { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.3px; }
+.proj-header-meta { display:flex; align-items:center; gap:10px; margin-top:4px; flex-wrap:wrap; }
+.proj-header-domain { font-size:13px; color:var(--text-35); }
+.proj-header-tipo { font-size:11px; font-weight:600; padding:3px 9px; border-radius:20px; background:rgba(124,106,255,0.14); color:var(--accent-violet-soft); border:1px solid rgba(124,106,255,0.22); }
+.proj-header-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+/* status selector */
+.status-sel {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-md); padding:7px 12px; color:var(--text-100);
+  font-size:12px; font-weight:600; outline:none; cursor:pointer;
+}
+.status-sel option { background:#1a1642; }
+
+/* progress in header */
+.proj-header-progress { display:flex; align-items:center; gap:12px; }
+.proj-header-bar-wrap { flex:1; }
+.proj-header-bar { height:6px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+.proj-header-bar-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--accent-violet),var(--accent-cyan)); transition:width .5s ease; }
+.proj-header-pct { font-size:12px; color:var(--text-60); font-weight:600; white-space:nowrap; }
+
+/* quick links bar */
+.links-bar {
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:14px;
+  padding-top:14px; border-top:1px solid var(--glass-border);
+}
+.link-chip {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 14px; border-radius:var(--r-md);
+  background:rgba(255,255,255,0.05); border:1px solid var(--glass-border);
+  color:var(--text-60); font-size:12px; font-weight:500;
+  text-decoration:none; transition:all var(--transition);
+}
+.link-chip:hover { background:rgba(124,106,255,0.15); color:var(--accent-violet-soft); border-color:rgba(124,106,255,0.3); }
+.link-chip-add {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:7px 14px; border-radius:var(--r-md);
+  background:none; border:1px dashed rgba(255,255,255,0.15);
+  color:var(--text-35); font-size:12px; font-weight:500; cursor:pointer;
+  transition:all var(--transition);
+}
+.link-chip-add:hover { border-color:rgba(124,106,255,0.4); color:var(--accent-violet-soft); }
+
+/* ── TABS ── */
+.tabs-bar {
+  display:flex; gap:2px; margin-bottom:22px;
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-lg); padding:4px;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+}
+.tab-btn {
+  flex:1; padding:9px 10px; border-radius:var(--r-md);
+  font-size:13px; font-weight:600; text-align:center;
+  cursor:pointer; border:none; background:none;
+  color:var(--text-60); transition:all var(--transition);
+}
+.tab-btn.active { background:rgba(124,106,255,0.20); color:var(--text-100); }
+.tab-pane { display:none; }
+.tab-pane.active { display:block; animation: fadeUp .25s ease both; }
+
+/* ── TAB 1: PANORAMICA ── */
+.panoramica-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+.cliente-card { background:var(--glass-fill); border:1px solid var(--glass-border); border-radius:var(--r-xl); padding:22px; backdrop-filter:var(--glass-blur); }
+.cliente-card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; margin-bottom:16px; display:flex; align-items:center; gap:7px; }
+.field-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+.field-row:last-child { border-bottom:none; }
+.field-icon { font-size:14px; width:20px; text-align:center; flex-shrink:0; }
+.field-label { font-size:11px; color:var(--text-35); width:90px; flex-shrink:0; }
+.field-value { font-size:13px; color:var(--text-100); flex:1; word-break:break-all; }
+.field-value a { color:var(--accent-violet-soft); text-decoration:none; }
+.field-value a:hover { text-decoration:underline; }
+.field-edit { background:none; border:none; color:var(--text-35); font-size:12px; cursor:pointer; padding:2px 4px; border-radius:4px; transition:color var(--transition); }
+.field-edit:hover { color:var(--accent-violet-soft); }
+
+/* checklist fasi */
+.fasi-card { background:var(--glass-fill); border:1px solid var(--glass-border); border-radius:var(--r-xl); padding:22px; backdrop-filter:var(--glass-blur); }
+.fase-item { margin-bottom:10px; }
+.fase-header { display:flex; align-items:center; gap:10px; cursor:pointer; padding:8px 10px; border-radius:var(--r-md); transition:background var(--transition); }
+.fase-header:hover { background:rgba(255,255,255,0.04); }
+.fase-num { width:28px; height:28px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; border:1.5px solid; }
+.fase-num.done { background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan)); border-color:transparent; color:#fff; }
+.fase-num.active { border-color:var(--accent-violet); color:var(--accent-violet-soft); background:rgba(124,106,255,0.12); }
+.fase-num.pending { border-color:var(--glass-border); color:var(--text-35); }
+.fase-label { font-size:13px; font-weight:600; flex:1; }
+.fase-pct { font-size:11px; color:var(--text-35); }
+.fase-checks { padding:6px 10px 6px 48px; display:none; }
+.fase-checks.open { display:block; }
+.fase-check-item { display:flex; align-items:center; gap:8px; padding:5px 0; cursor:pointer; font-size:12px; color:var(--text-60); transition:color var(--transition); }
+.fase-check-item:hover { color:var(--text-100); }
+.fase-check-item.done-item { color:var(--text-35); text-decoration:line-through; }
+.check-box-sm { width:14px; height:14px; border-radius:3px; border:1.5px solid var(--glass-border); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:8px; transition:all var(--transition); }
+.fase-check-item.done-item .check-box-sm { background:var(--accent-green); border-color:var(--accent-green); color:#fff; }
+
+/* prossimo step */
+.next-step-card { background:linear-gradient(135deg,rgba(124,106,255,0.10),rgba(56,189,248,0.06)); border:1px solid rgba(124,106,255,0.22); border-radius:var(--r-lg); padding:14px 18px; margin-top:14px; }
+.next-step-label { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--accent-violet-soft); font-weight:700; margin-bottom:6px; }
+.next-step-input { background:none; border:none; outline:none; color:var(--text-100); font-size:13px; width:100%; line-height:1.5; resize:none; min-height:38px; font-family:inherit; }
+.next-step-input::placeholder { color:var(--text-35); }
+
+/* ── TAB 2: BRIEF ── */
+.brief-section { margin-bottom:16px; }
+.brief-section-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-lg); cursor:pointer; transition:background var(--transition);
+}
+.brief-section-header:hover { background:var(--glass-fill-md); }
+.brief-section-title { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; }
+.brief-section-toggle { color:var(--text-35); transition:transform var(--transition); font-size:12px; }
+.brief-section-header.open .brief-section-toggle { transform:rotate(180deg); }
+.brief-section-body { padding:16px; background:rgba(0,0,0,0.15); border:1px solid var(--glass-border); border-top:none; border-radius:0 0 var(--r-lg) var(--r-lg); display:none; }
+.brief-section-body.open { display:block; }
+
+.brief-field { margin-bottom:14px; }
+.brief-field:last-child { margin-bottom:0; }
+.brief-field-label { font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--text-35); font-weight:700; margin-bottom:5px; }
+.brief-field-value { font-size:13px; color:var(--text-60); line-height:1.6; }
+.brief-field-value.editable { background:rgba(255,255,255,0.03); border:1px solid transparent; border-radius:var(--r-sm); padding:6px 10px; cursor:text; transition:border-color var(--transition); }
+.brief-field-value.editable:hover { border-color:var(--glass-border); }
+.brief-field-value.editable:focus { border-color:rgba(124,106,255,0.4); outline:none; background:rgba(124,106,255,0.04); }
+
+/* tags brand */
+.brand-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.brand-tag-si  { background:rgba(52,211,153,0.12); color:var(--accent-green); border:1px solid rgba(52,211,153,0.22); font-size:12px; padding:3px 10px; border-radius:20px; }
+.brand-tag-no  { background:rgba(248,113,113,0.10); color:#f87171; border:1px solid rgba(248,113,113,0.2); font-size:12px; padding:3px 10px; border-radius:20px; text-decoration:line-through; }
+
+/* palette */
+.palette-dots { display:flex; gap:8px; flex-wrap:wrap; }
+.palette-dot { width:32px; height:32px; border-radius:50%; border:2px solid rgba(255,255,255,0.15); cursor:pointer; transition:transform var(--transition); }
+.palette-dot:hover { transform:scale(1.15); }
+
+/* personas */
+.personas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:10px; }
+.persona-card { background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:var(--r-lg); padding:12px 14px; }
+.persona-name { font-weight:700; font-size:13px; margin-bottom:4px; }
+.persona-detail { font-size:11px; color:var(--text-60); line-height:1.6; }
+
+/* no brief state */
+.no-brief { text-align:center; padding:48px 20px; color:var(--text-35); }
+.no-brief-icon { font-size:40px; margin-bottom:12px; opacity:.3; }
+
+/* ── TAB 3: SITO & SEO ── */
+.pages-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.menu-order { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:20px; }
+.menu-pill {
+  padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;
+  background:rgba(124,106,255,0.12); border:1px solid rgba(124,106,255,0.22);
+  color:var(--accent-violet-soft);
+}
+
+.pages-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:14px; }
+.page-card {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); padding:18px; backdrop-filter:var(--glass-blur);
+  transition:border-color var(--transition);
+}
+.page-card:hover { border-color:var(--glass-border-hover); }
+.page-card-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+.page-card-name { font-family:'Syne',sans-serif; font-weight:800; font-size:15px; }
+.page-card-actions { display:flex; gap:4px; }
+.page-action-btn { background:none; border:1px solid var(--glass-border); color:var(--text-35); padding:3px 7px; border-radius:5px; font-size:11px; cursor:pointer; transition:all var(--transition); }
+.page-action-btn:hover { background:var(--glass-fill-md); color:var(--text-100); }
+
+.kwd-main { font-size:12px; font-weight:700; color:var(--accent-cyan); margin-bottom:4px; }
+.kwd-secondary { font-size:11px; color:var(--text-35); margin-bottom:12px; line-height:1.5; }
+
+.page-sezioni { list-style:none; margin-bottom:14px; }
+.page-sezione-item { display:flex; align-items:center; gap:7px; padding:4px 0; font-size:12px; color:var(--text-60); cursor:pointer; transition:color var(--transition); }
+.page-sezione-item:hover { color:var(--text-100); }
+.page-sezione-item.done-item { color:var(--text-35); text-decoration:line-through; }
+.page-sezione-item .check-box-sm { flex-shrink:0; }
+.page-sezione-item.done-item .check-box-sm { background:var(--accent-green); border-color:var(--accent-green); color:#fff; }
+
+.page-status-row { display:flex; gap:8px; padding-top:12px; border-top:1px solid var(--glass-border); }
+.pstatus-btn {
+  display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600;
+  padding:5px 10px; border-radius:var(--r-sm); border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.04); cursor:pointer; transition:all var(--transition); flex:1; justify-content:center;
+}
+.pstatus-btn.active-copy  { background:rgba(124,106,255,0.18); border-color:rgba(124,106,255,0.3); color:var(--accent-violet-soft); }
+.pstatus-btn.active-seo   { background:rgba(52,211,153,0.14);  border-color:rgba(52,211,153,0.3);  color:var(--accent-green); }
+.pstatus-btn.active-dev   { background:rgba(56,189,248,0.14);  border-color:rgba(56,189,248,0.3);  color:var(--accent-cyan); }
+
+/* ── TAB 4: NOTE ── */
+.note-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.note-saved { font-size:11px; color:var(--text-35); }
+.note-area { width:100%; background:var(--glass-fill); border:1px solid var(--glass-border); border-radius:var(--r-xl); padding:20px; color:var(--text-100); font-size:14px; line-height:1.8; resize:none; min-height:360px; outline:none; transition:border-color var(--transition); font-family:inherit; }
+.note-area:focus { border-color:rgba(124,106,255,0.4); }
+.note-area::placeholder { color:var(--text-35); }
+
+/* modal link */
+.modal-sm { max-width:400px; }
+
+@media(max-width:900px){ .panoramica-grid { grid-template-columns:1fr; } }
+@media(max-width:600px){ .tabs-bar { flex-wrap:wrap; } .tab-btn { flex:none; width:48%; } .pages-grid { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="bg-mesh"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📂</span><span class="nav-label">Archivio Template</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a>    <div style="margin-bottom:6px;padding:0 4px;">
+      <span class="sync-indicator sync-idle" id="sync-indicator">Sync non configurato</span>
+    </div>
+  <div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" onclick="location.href='../impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item active" onclick="location.href='index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../dashboard/index.html'"><span class="bicon">🗂</span>Skill</button>
+</div></div>
+
+<main class="main-content">
+
+  <!-- BACK + DELETE -->
+  <div class="flex items-center justify-between" style="margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+    <a href="index.html" style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-60);text-decoration:none;transition:color var(--transition);" onmouseover="this.style.color='var(--text-100)'" onmouseout="this.style.color='var(--text-60)'">
+      ← Tutti i Progetti
+    </a>
+    <button class="btn btn-danger btn-sm" onclick="deleteProject()">✕ Elimina Progetto</button>
+  </div>
+
+  <!-- PROJECT HEADER -->
+  <div class="proj-header" style="margin-bottom:18px;">
+    <div class="proj-header-top">
+      <div class="proj-header-logo" id="hdr-logo" onclick="document.getElementById('logo-change').click()" title="Cambia logo">
+        <span id="hdr-initials">?</span>
+        <img id="hdr-logo-img" src="" style="display:none;"/>
+        <input type="file" id="logo-change" accept="image/*" style="display:none" onchange="changeLogo(this)"/>
+      </div>
+      <div class="proj-header-info">
+        <div class="proj-header-name" id="hdr-name">—</div>
+        <div class="proj-header-meta">
+          <span class="proj-header-domain" id="hdr-domain"></span>
+          <span class="proj-header-tipo" id="hdr-tipo"></span>
+        </div>
+      </div>
+      <div class="proj-header-actions">
+        <select class="status-sel" id="status-sel" onchange="changeStatus(this.value)">
+          <option value="attivo">🟢 Attivo</option>
+          <option value="pausa">🟡 In Pausa</option>
+          <option value="completato">✓ Completato</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="modalOpen('modal-link')">+ Link</button>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="proj-header-progress">
+      <div style="font-size:11px;color:var(--text-35);flex-shrink:0;" id="hdr-phase">—</div>
+      <div class="proj-header-bar-wrap">
+        <div class="proj-header-bar"><div class="proj-header-bar-fill" id="hdr-bar" style="width:0%"></div></div>
+      </div>
+      <div class="proj-header-pct" id="hdr-pct">0%</div>
+    </div>
+
+    <!-- WP ADMIN + QUICK LINKS -->
+    <div id="wp-admin-bar" style="display:none;padding-bottom:10px;border-bottom:1px solid var(--glass-border);margin-bottom:10px;">
+      <a id="wp-admin-link" href="#" target="_blank" class="link-chip" style="background:rgba(52,211,153,0.10);border-color:rgba(52,211,153,0.25);color:var(--accent-green);font-weight:600;">
+        🔒 WP Admin
+      </a>
+      <span id="wp-admin-user" style="font-size:11px;color:var(--text-35);margin-left:8px;"></span>
+    </div>
+    <div class="links-bar" id="links-bar">
+      <button class="link-chip-add" onclick="modalOpen('modal-link')">+ Aggiungi link</button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn active" data-tab="panoramica" onclick="switchTab('panoramica',this)">📋 Panoramica</button>
+    <button class="tab-btn" data-tab="brief" onclick="switchTab('brief',this)">🎯 Brief</button>
+    <button class="tab-btn" data-tab="sito" onclick="switchTab('sito',this)">🗺 Sito & SEO</button>
+    <button class="tab-btn" data-tab="note" onclick="switchTab('note',this)">📝 Note</button>
+  </div>
+
+  <!-- TAB: PANORAMICA -->
+  <div class="tab-pane active" id="tab-panoramica">
+    <div class="panoramica-grid">
+
+      <!-- CLIENTE -->
+      <div class="cliente-card">
+        <div class="cliente-card-title">👤 Dati Cliente</div>
+        <div id="cliente-fields"></div>
+      </div>
+
+      <!-- FASI -->
+      <div class="fasi-card">
+        <div class="cliente-card-title" style="justify-content:space-between;">
+          ✅ Avanzamento Fasi
+          <span style="font-size:11px;color:var(--text-35);font-weight:400;" id="fasi-counter">0/6</span>
+        </div>
+        <div id="fasi-list"></div>
+
+        <div class="next-step-card">
+          <div class="next-step-label">⚡ Prossimo Step</div>
+          <textarea class="next-step-input" id="next-step-input" placeholder="Scrivi cosa devi fare adesso…" oninput="saveNextStep()" rows="2"></textarea>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: BRIEF -->
+  <div class="tab-pane" id="tab-brief">
+    <div id="brief-content"></div>
+  </div>
+
+  <!-- TAB: SITO & SEO -->
+  <div class="tab-pane" id="tab-sito">
+    <div class="pages-header">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:4px;">Struttura Sito & Keyword Map</div>
+        <div style="font-size:13px;color:var(--text-60);">Spunta le sezioni man mano che le costruisci. Tieni traccia di copy, SEO e sviluppo per ogni pagina.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="addPage()">+ Pagina</button>
+    </div>
+    <div class="menu-order" id="menu-order"></div>
+    <div class="pages-grid" id="pages-grid"></div>
+  </div>
+
+  <!-- TAB: NOTE -->
+  <div class="tab-pane" id="tab-note">
+    <div class="note-header">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;">📝 Note Operative</div>
+        <div style="font-size:13px;color:var(--text-60);margin-top:3px;">Appunti, decisioni prese, cose da ricordare. Salvato in automatico.</div>
+      </div>
+      <div class="note-saved" id="note-saved">—</div>
+    </div>
+    <textarea class="note-area" id="note-area" placeholder="• Logo: recuperare dai profili social&#10;• Foto: Drive di Matteo — cercare le orizzontali&#10;• Testi: in attesa dal cliente&#10;&#10;Scrivi tutto quello che non vuoi dimenticare…" oninput="saveNote()"></textarea>
+  </div>
+
+</main>
+
+<!-- MODAL AGGIUNGI LINK -->
+<div class="modal-overlay" id="modal-link">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">🔗 Aggiungi Link Rapido</div>
+      <button class="modal-close" onclick="modalClose('modal-link')">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Etichetta</label>
+      <input class="form-input" type="text" id="link-label" placeholder="es. Drive, Figma, Staging…"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">URL <span style="color:var(--accent-violet-soft)">*</span></label>
+      <input class="form-input" type="url" id="link-url" placeholder="https://…"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="modalClose('modal-link')">Annulla</button>
+      <button class="btn btn-primary" onclick="saveLink()">Aggiungi</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+// ── LOAD PROJECT ──────────────────────────────────────────
+const params = new URLSearchParams(location.search);
+const projId = params.get('id');
+let progetti = store.get('hub_progetti', []);
+let proj = progetti.find(p => p.id === projId);
+
+if (!proj) { location.href = 'index.html'; }
+
+const TIPO_LABELS = { vetrina:'Sito Vetrina', ecommerce:'E-commerce', blog:'Blog / Magazine', webapp:'Web App' };
+const PHASE_NAMES = ['Brief & Analisi','Wireframe','Design UI','Sviluppo','QA & Testing','Consegna'];
+
+async function save() {
+  const idx = progetti.findIndex(p => p.id === projId);
+  if (idx > -1) progetti[idx] = proj;
+  await syncSave('hub_progetti', progetti);
+}
+
+// ── TABS ─────────────────────────────────────────────────
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  // Persist last active tab
+  store.set('hub_scheda_tab_' + projId, tab);
+}
+
+// ── RENDER HEADER ─────────────────────────────────────────
+function renderHeader() {
+  const initials = (proj.name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('hdr-initials').textContent = initials;
+  if (proj.logo) { document.getElementById('hdr-logo-img').src = proj.logo; document.getElementById('hdr-logo-img').style.display='block'; document.getElementById('hdr-initials').style.display='none'; }
+
+  document.getElementById('hdr-name').textContent   = proj.name || '—';
+  document.getElementById('hdr-domain').textContent = proj.domain || '';
+  document.getElementById('hdr-tipo').textContent   = TIPO_LABELS[proj.tipo] || '';
+  document.getElementById('status-sel').value       = proj.status || 'attivo';
+  document.title = proj.name + ' — Agency Hub';
+
+  // Progress
+  const allChecks = (proj.checklist||[]).flatMap(f => f.checks||[]);
+  const doneChecks = (proj.checklist||[]).flatMap(f => (f.doneChecks||[]).map(i => f.checks[i]));
+  const done  = (proj.checklist||[]).filter(f => f.done).length;
+  const total = (proj.checklist||[]).length || 6;
+  const pct   = total > 0 ? Math.round(done/total*100) : 0;
+  const phase = PHASE_NAMES[Math.min(done, total-1)];
+
+  document.getElementById('hdr-bar').style.width = pct + '%';
+  document.getElementById('hdr-pct').textContent = pct + '%';
+  document.getElementById('hdr-phase').textContent = '⚡ ' + phase;
+
+  // Links
+  const linksBar = document.getElementById('links-bar');
+  const links = proj.links || [];
+  const chipsHtml = links.map((l,i) => `
+    <a class="link-chip" href="${esc(l.url)}" target="_blank">🔗 ${esc(l.label)}
+      <span onclick="event.preventDefault();removeLink(${i})" style="margin-left:4px;opacity:.4;font-size:10px;" title="Rimuovi">✕</span>
+    </a>`).join('');
+  linksBar.innerHTML = chipsHtml + `<button class="link-chip-add" onclick="modalOpen('modal-link')">+ Link</button>`;
+
+  // WP Admin
+  if (proj.wpUrl) {
+    const wpBar = document.getElementById('wp-admin-bar');
+    const wpLink = document.getElementById('wp-admin-link');
+    const wpUser = document.getElementById('wp-admin-user');
+    wpBar.style.display = 'block';
+    const url = proj.wpUrl.startsWith('http') ? proj.wpUrl : 'https://' + proj.wpUrl;
+    wpLink.href = url;
+    wpLink.innerHTML = '🔒 WP Admin — ' + proj.wpUrl.replace(/https?:\/\//,'');
+    if (proj.wpUser) wpUser.textContent = 'User: ' + proj.wpUser;
+  }
+}
+
+// ── TAB PANORAMICA ────────────────────────────────────────
+function renderPanoramica() {
+  const b = proj.brief || {};
+
+  // Cliente fields
+  const fields = [
+    { icon:'🏢', label:'Cliente',    value: b.cliente || b.nomeCommerciale || '—', key:'cliente' },
+    { icon:'🏭', label:'Settore',    value: b.settore || '—', key:'settore' },
+    { icon:'📞', label:'Telefono',   value: b.telefono || '—', link: b.telefono ? 'tel:'+b.telefono : null },
+    { icon:'📧', label:'Email',      value: b.email || '—', link: b.email ? 'mailto:'+b.email : null },
+    { icon:'🌐', label:'Dominio',    value: proj.domain || b.domain || '—', link: proj.domain ? 'https://'+proj.domain : null },
+    { icon:'📘', label:'Facebook',   value: b.facebook || '—', link: b.facebook && b.facebook !== '—' ? b.facebook : null },
+    { icon:'📸', label:'Instagram',  value: b.instagram || '—' },
+    { icon:'🆚', label:'Competitor', value: b.competitor || '—' },
+    { icon:'🧾', label:'P.IVA',      value: b.partitaIva || '—' },
+  ];
+
+  document.getElementById('cliente-fields').innerHTML = fields.map(f => `
+    <div class="field-row">
+      <span class="field-icon">${f.icon}</span>
+      <span class="field-label">${f.label}</span>
+      <span class="field-value">${f.link ? `<a href="${esc(f.link)}" target="_blank">${esc(f.value)}</a>` : esc(f.value)}</span>
+    </div>`).join('');
+
+  // Fasi checklist
+  const checklist = proj.checklist || [];
+  const done = checklist.filter(f=>f.done).length;
+  document.getElementById('fasi-counter').textContent = done + '/' + checklist.length;
+
+  document.getElementById('fasi-list').innerHTML = checklist.map((fase, fi) => {
+    const doneChecks = fase.doneChecks || [];
+    const fasePct = fase.checks.length > 0 ? Math.round(doneChecks.length/fase.checks.length*100) : 0;
+    const numClass = fase.done ? 'done' : doneChecks.length > 0 ? 'active' : 'pending';
+    const numContent = fase.done ? '✓' : fase.id;
+
+    const checksHtml = fase.checks.map((c,ci) => {
+      const isDone = doneChecks.includes(ci);
+      return `<div class="fase-check-item ${isDone?'done-item':''}" onclick="toggleCheck(${fi},${ci})">
+        <div class="check-box-sm">${isDone?'✓':''}</div>${esc(c)}
+      </div>`;
+    }).join('');
+
+    return `
+      <div class="fase-item">
+        <div class="fase-header" onclick="toggleFase(${fi})">
+          <div class="fase-num ${numClass}">${numContent}</div>
+          <div class="fase-label">${esc(fase.label)}</div>
+          <div class="fase-pct">${doneChecks.length}/${fase.checks.length}</div>
+          <span style="font-size:10px;color:var(--text-35);margin-left:4px;">▾</span>
+        </div>
+        <div class="fase-checks" id="fase-checks-${fi}">${checksHtml}</div>
+      </div>`;
+  }).join('');
+
+  // Next step
+  document.getElementById('next-step-input').value = proj.nextStep || '';
+}
+
+function toggleFase(fi) {
+  const el = document.getElementById('fase-checks-' + fi);
+  el.classList.toggle('open');
+}
+
+async function toggleCheck(fi, ci) {
+  const fase = proj.checklist[fi];
+  if (!fase.doneChecks) fase.doneChecks = [];
+  const idx = fase.doneChecks.indexOf(ci);
+  if (idx > -1) fase.doneChecks.splice(idx,1);
+  else fase.doneChecks.push(ci);
+  // Se tutti i check sono fatti, marca la fase come done
+  fase.done = fase.doneChecks.length === fase.checks.length;
+  save();
+  renderHeader();
+  renderPanoramica();
+}
+
+async function saveNextStep() {
+  proj.nextStep = document.getElementById('next-step-input').value;
+  save();
+}
+
+// ── TAB BRIEF ────────────────────────────────────────────
+function renderBrief() {
+  const b = proj.brief || {};
+  const container = document.getElementById('brief-content');
+
+  if (!b.cliente && !b.obiettivo && !b.rawText) {
+    container.innerHTML = `<div class="no-brief">
+      <div class="no-brief-icon">📄</div>
+      <div style="font-size:14px;margin-bottom:8px;color:var(--text-60);">Nessun brief caricato</div>
+      <div style="font-size:12px;line-height:1.6;">Torna alla lista progetti, elimina questo e ricrealo caricando il file Word.</div>
+    </div>`;
+    return;
+  }
+
+  if (b.rawText && !b.obiettivo) {
+    container.innerHTML = `<div class="card"><pre style="white-space:pre-wrap;font-size:13px;color:var(--text-60);line-height:1.7;">${esc(b.rawText.slice(0,3000))}</pre></div>`;
+    return;
+  }
+
+  const sections = [
+    {
+      title: '🎯 Posizionamento & Obiettivi',
+      fields: [
+        { label:'Obiettivo Principale', value: b.obiettivo },
+        { label:'Proposta di Valore', value: b.proposta },
+      ]
+    },
+    {
+      title: '🗣 Tono di Voce & Brand',
+      custom: () => {
+        const si  = (b.aggettiviSi||'').split(/[,;]+/).map(s=>s.trim()).filter(Boolean);
+        const no  = (b.aggettiviNo||'').split(/[,;]+/).map(s=>s.trim()).filter(Boolean);
+        return `
+          <div class="brief-field"><div class="brief-field-label">Tono</div><div class="brief-field-value">${esc(b.tonoVoce||'—')}</div></div>
+          ${si.length ? `<div class="brief-field"><div class="brief-field-label">Aggettivi ✓</div><div class="brand-tags">${si.map(a=>`<span class="brand-tag-si">${esc(a)}</span>`).join('')}</div></div>` : ''}
+          ${no.length ? `<div class="brief-field"><div class="brief-field-label">Da evitare ✕</div><div class="brand-tags">${no.map(a=>`<span class="brand-tag-no">${esc(a)}</span>`).join('')}</div></div>` : ''}
+        `;
+      }
+    },
+    {
+      title: '👥 Target & Personas',
+      fields: [{ label:'Target', value: b.target }]
+    },
+    {
+      title: '🎨 Stile & Palette',
+      custom: () => {
+        const colors = (b.palette||'').match(/#[0-9A-Fa-f]{3,6}/g) || [];
+        return `
+          ${colors.length ? `<div class="brief-field"><div class="brief-field-label">Palette</div><div class="palette-dots">${colors.map(c=>`<div class="palette-dot" style="background:${c}" title="${c}" onclick="navigator.clipboard.writeText('${c}').then(()=>toast('Colore copiato!','ok'))"></div>`).join('')}</div></div>` : `<div class="brief-field"><div class="brief-field-label">Palette</div><div class="brief-field-value">${esc(b.palette||'—')}</div></div>`}
+          <div class="brief-field"><div class="brief-field-label">Tipografia</div><div class="brief-field-value">${esc(b.font||'—')}</div></div>
+        `;
+      }
+    },
+    {
+      title: '📋 Note Operative',
+      fields: [{ label:'Note', value: b.noteOperative }]
+    }
+  ];
+
+  container.innerHTML = sections.map((s,i) => `
+    <div class="brief-section">
+      <div class="brief-section-header" onclick="toggleBriefSection(${i},this)">
+        <div class="brief-section-title">${s.title}</div>
+        <span class="brief-section-toggle">▾</span>
+      </div>
+      <div class="brief-section-body" id="brief-sec-${i}">
+        ${s.custom ? s.custom() : (s.fields||[]).map(f => `
+          <div class="brief-field">
+            <div class="brief-field-label">${f.label}</div>
+            <div class="brief-field-value">${esc(f.value||'—')}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  // Open first section by default
+  document.querySelector('.brief-section-header').classList.add('open');
+  document.getElementById('brief-sec-0').classList.add('open');
+}
+
+function toggleBriefSection(i, el) {
+  el.classList.toggle('open');
+  document.getElementById('brief-sec-' + i).classList.toggle('open');
+}
+
+// ── TAB SITO & SEO ────────────────────────────────────────
+function renderSito() {
+  const b = proj.brief || {};
+  let pages = proj.pages || [];
+
+  // Se non ci sono pagine salvate ma il brief le ha, le importa
+  if (!pages.length && b.pagine && b.pagine.length) {
+    pages = b.pagine.map((p,i) => ({
+      id: 'pg_'+i, name: p.nome||'Pagina '+(i+1),
+      kwd: p.kwd||'', kwdSec: p.kwdSecondarie||'',
+      sezioni: (p.sezioni||'').split(/[,;•\n]+/).map(s=>s.trim()).filter(Boolean),
+      sezioniDone: [],
+      statusCopy: false, statusSeo: false, statusDev: false
+    }));
+    proj.pages = pages; save();
+  }
+
+  // Menu pills
+  document.getElementById('menu-order').innerHTML = pages.map(p =>
+    `<div class="menu-pill">${esc(p.name)}</div>`).join('');
+
+  if (!pages.length) {
+    document.getElementById('pages-grid').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-35);font-size:13px;">Nessuna pagina ancora. Clicca <strong>+ Pagina</strong> per aggiungerne una.</div>`;
+    return;
+  }
+
+  document.getElementById('pages-grid').innerHTML = pages.map((p,pi) => {
+    const sezioniHtml = (p.sezioni||[]).map((s,si) => {
+      const isDone = (p.sezioniDone||[]).includes(si);
+      return `<li class="page-sezione-item ${isDone?'done-item':''}" onclick="toggleSezione(${pi},${si})">
+        <div class="check-box-sm">${isDone?'✓':''}</div>${esc(s)}
+      </li>`;
+    }).join('');
+
+    return `
+      <div class="page-card">
+        <div class="page-card-header">
+          <div class="page-card-name">${esc(p.name)}</div>
+          <div class="page-card-actions">
+            <button class="page-action-btn" onclick="deletePage(${pi})" title="Elimina pagina">✕</button>
+          </div>
+        </div>
+        <div class="kwd-main">🔑 ${esc(p.kwd||'—')}</div>
+        <div class="kwd-secondary">${esc(p.kwdSec||'—')}</div>
+        ${sezioniHtml ? `<ul class="page-sezioni">${sezioniHtml}</ul>` : ''}
+        <div class="page-status-row">
+          <button class="pstatus-btn ${p.statusCopy?'active-copy':''}" onclick="togglePageStatus(${pi},'copy')">✏️ Copy</button>
+          <button class="pstatus-btn ${p.statusSeo?'active-seo':''}"  onclick="togglePageStatus(${pi},'seo')">🔍 SEO</button>
+          <button class="pstatus-btn ${p.statusDev?'active-dev':''}"  onclick="togglePageStatus(${pi},'dev')">⚙️ Dev</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function toggleSezione(pi, si) {
+  const page = proj.pages[pi];
+  if (!page.sezioniDone) page.sezioniDone = [];
+  const idx = page.sezioniDone.indexOf(si);
+  if (idx > -1) page.sezioniDone.splice(idx,1); else page.sezioniDone.push(si);
+  save(); renderSito();
+}
+
+async function togglePageStatus(pi, type) {
+  const page = proj.pages[pi];
+  if (type === 'copy') page.statusCopy = !page.statusCopy;
+  if (type === 'seo')  page.statusSeo  = !page.statusSeo;
+  if (type === 'dev')  page.statusDev  = !page.statusDev;
+  save(); renderSito();
+}
+
+function addPage() {
+  const name = prompt('Nome pagina (es. Home, Servizi, Contatti):');
+  if (!name) return;
+  const kwd = prompt('Keyword principale:') || '';
+  if (!proj.pages) proj.pages = [];
+  proj.pages.push({ id:'pg_'+Date.now(), name, kwd, kwdSec:'', sezioni:[], sezioniDone:[], statusCopy:false, statusSeo:false, statusDev:false });
+  save(); renderSito();
+}
+
+function deletePage(pi) {
+  if (!confirm('Eliminare questa pagina?')) return;
+  proj.pages.splice(pi,1); save(); renderSito();
+}
+
+// ── NOTE ─────────────────────────────────────────────────
+let noteSaveTimer;
+async function saveNote() {
+  proj.notes = document.getElementById('note-area').value;
+  clearTimeout(noteSaveTimer);
+  noteSaveTimer = setTimeout(() => {
+    save();
+    document.getElementById('note-saved').textContent = 'Salvato · ' + new Date().toLocaleTimeString('it',{hour:'2-digit',minute:'2-digit'});
+  }, 800);
+}
+
+// ── LINKS ─────────────────────────────────────────────────
+async function saveLink() {
+  const label = document.getElementById('link-label').value.trim() || 'Link';
+  const url   = document.getElementById('link-url').value.trim();
+  if (!url) { toast('Inserisci un URL!','err'); return; }
+  if (!proj.links) proj.links = [];
+  proj.links.push({ label, url });
+  save(); modalClose('modal-link');
+  document.getElementById('link-label').value = '';
+  document.getElementById('link-url').value = '';
+  renderHeader();
+  toast('Link aggiunto!','ok');
+}
+
+function removeLink(i) {
+  proj.links.splice(i,1); save(); renderHeader();
+}
+
+// ── STATUS ────────────────────────────────────────────────
+async function changeStatus(val) {
+  proj.status = val; save();
+  toast('Stato aggiornato','ok');
+}
+
+// ── LOGO ─────────────────────────────────────────────────
+function changeLogo(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 200;
+      const ratio = Math.min(MAX/img.width, MAX/img.height, 1);
+      canvas.width  = img.width  * ratio;
+      canvas.height = img.height * ratio;
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      proj.logo = canvas.toDataURL('image/jpeg', 0.82);
+      save();
+      document.getElementById('hdr-logo-img').src = proj.logo;
+      document.getElementById('hdr-logo-img').style.display = 'block';
+      document.getElementById('hdr-initials').style.display = 'none';
+      toast('Logo aggiornato!','ok');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ── DELETE PROJECT ─────────────────────────────────────────
+async function deleteProject() {
+  if (!confirm('Eliminare definitivamente questo progetto?')) return;
+  progetti = progetti.filter(p => p.id !== projId);
+  await syncSave('hub_progetti', progetti);
+  toast('Progetto eliminato','info');
+  setTimeout(() => location.href = 'index.html', 500);
+}
+
+// ── SIDEBAR BADGES ────────────────────────────────────────
+function initBadges() {
+  document.getElementById('sb-badge-interventi').textContent = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length;
+  if (store.get('hub_groq_key','')) { document.getElementById('sb-api-dot').classList.remove('off'); document.getElementById('sb-api-label').textContent = 'Groq API configurata'; }
+}
+
+// ── INIT ─────────────────────────────────────────────────
+(async function init() {
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    try {
+      await GitHubSync.pullAll();
+      progetti = store.get('hub_progetti', []);
+      proj = progetti.find(p => p.id === projId);
+      if (!proj) { location.href = 'index.html'; return; }
+    } catch(e) { console.warn('Sync pull failed:', e.message); }
+  }
+  renderHeader();
+  renderPanoramica();
+  renderBrief();
+  renderSito();
+  // Restore last active tab
+  const lastTab = store.get('hub_scheda_tab_' + projId, 'panoramica');
+  const tabBtn = document.querySelector(`.tab-btn[onclick*="${lastTab}"]`);
+  if (lastTab !== 'panoramica' && tabBtn) switchTab(lastTab, tabBtn);
+  document.getElementById('note-area').value = proj.notes || '';
+  if (proj.notes) document.getElementById('note-saved').textContent = 'Salvato in precedenza';
+  initBadges();
+})();
+document.getElementById('note-area').value = proj.notes || '';
+if (proj.notes) document.getElementById('note-saved').textContent = 'Salvato in precedenza';
+initBadges();
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

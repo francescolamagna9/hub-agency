@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Roadmap Progetto — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+.roadmap-header-card {
+  background: linear-gradient(135deg, rgba(56,189,248,0.10), rgba(124,106,255,0.08));
+  border: 1px solid rgba(56,189,248,0.20);
+  border-radius: var(--r-xl); padding: 24px; margin-bottom: 32px;
+}
+.roadmap-header-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px; }
+.roadmap-header-info {}
+.roadmap-header-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:5px; }
+.roadmap-header-desc { font-size:13px; color:var(--text-60); line-height:1.6; max-width:520px; }
+.roadmap-header-actions { display:flex; gap:8px; }
+
+.progress-bar-wrap { margin-top:6px; }
+.progress-bar-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--text-35); margin-bottom:7px; }
+.progress-bar { height:8px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; }
+.progress-fill { height:100%; border-radius:10px; background:linear-gradient(90deg,var(--accent-violet),var(--accent-cyan)); transition:width .6s cubic-bezier(.4,0,.2,1); }
+
+/* timeline */
+.timeline { display:flex; flex-direction:column; gap:0; position:relative; max-width:820px; }
+.timeline::before {
+  content:''; position:absolute; left:31px; top:24px; bottom:24px; width:2px;
+  background:linear-gradient(180deg, var(--accent-violet), rgba(56,189,248,0.25));
+  z-index:0;
+}
+
+.step { display:flex; gap:18px; align-items:flex-start; padding:8px 0; position:relative; z-index:1; }
+.step-num {
+  width:62px; height:62px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:17px; font-weight:800;
+  position:relative; cursor:pointer; transition:all var(--transition);
+  border:2px solid;
+  background: var(--bg-deep);
+}
+.step-num.done {
+  background:linear-gradient(135deg,var(--accent-violet),var(--accent-cyan));
+  border-color:transparent; color:#fff;
+  box-shadow:0 4px 20px rgba(124,106,255,0.35);
+}
+.step-num.active {
+  border-color:var(--accent-violet); color:var(--accent-violet-soft);
+  background:rgba(124,106,255,0.12);
+  box-shadow:0 0 0 4px rgba(124,106,255,0.14), 0 4px 20px rgba(124,106,255,0.22);
+}
+.step-num.pending { border-color:var(--glass-border); color:var(--text-35); }
+.step-num:hover { transform:scale(1.05); }
+
+.step-card {
+  flex:1; background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); padding:18px 20px; margin-bottom:14px;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  transition:all var(--transition);
+}
+.step-card:hover { border-color:rgba(56,189,248,0.22); }
+.step-card.active-card { border-color:rgba(124,106,255,0.30); }
+
+.step-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:8px; }
+.step-card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; }
+.step-card-actions { display:flex; gap:6px; align-items:center; }
+
+.step-card-desc { font-size:13px; color:var(--text-60); line-height:1.6; margin-bottom:12px; }
+
+/* checklist inside step */
+.step-checklist { list-style:none; margin-bottom:12px; }
+.check-item {
+  display:flex; align-items:center; gap:9px;
+  padding:7px 0; border-bottom:1px solid rgba(255,255,255,0.04); font-size:13px;
+  color:var(--text-60); cursor:pointer; transition:color var(--transition);
+}
+.check-item:last-child { border-bottom:none; }
+.check-item:hover { color:var(--text-100); }
+.check-item.done-item { color:var(--text-35); text-decoration:line-through; }
+.check-box {
+  width:17px; height:17px; border-radius:5px; flex-shrink:0;
+  border:1.5px solid var(--glass-border); background:none;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; transition:all var(--transition);
+}
+.check-item.done-item .check-box { background:var(--accent-green); border-color:var(--accent-green); color:#fff; }
+
+/* notes */
+.step-notes {
+  display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--glass-border);
+}
+.step-notes.open { display:block; }
+.step-notes textarea {
+  width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--glass-border);
+  border-radius:var(--r-md); padding:10px 12px; color:var(--text-100);
+  font-size:13px; resize:vertical; min-height:70px; outline:none; line-height:1.6;
+  transition:border-color var(--transition);
+}
+.step-notes textarea:focus { border-color:rgba(124,106,255,0.4); }
+
+@media(max-width:600px) {
+  .timeline::before { left:27px; }
+  .step-num { width:54px; height:54px; font-size:14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="../progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item" href="../dashboard/index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span><span class="nav-badge" id="sb-badge-skills">0</span></a>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap Progetto</span><span class="nav-badge green">6</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📁</span><span class="nav-label">Archivio Template</span><span class="nav-badge" id="sb-badge-archivio">0</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a><div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" onclick="location.href='../impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='../progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../impostazioni/index.html'"><span class="bicon">⚙️</span>Settings</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="page-eyebrow">Processo Operativo</div>
+    <div class="page-title">🗺 Roadmap Web Project</div>
+    <div class="page-sub">Dal brief alla consegna: le fasi operative di ogni progetto. Clicca il cerchio per cambiare lo stato.</div>
+  </div>
+
+  <div class="roadmap-header-card">
+    <div class="roadmap-header-top">
+      <div class="roadmap-header-info">
+        <div class="roadmap-header-title">⚡ Pipeline Completa — Web Project</div>
+        <div class="roadmap-header-desc">Segui ogni fase del workflow, spunta le attività e lascia note operative per ciascun progetto. Tutto si salva automaticamente.</div>
+      </div>
+      <div class="roadmap-header-actions">
+        <button class="btn btn-ghost btn-sm" onclick="resetAll()">↺ Reset</button>
+        <button class="btn btn-primary btn-sm" onclick="exportRoadmap()">⬇ Esporta</button>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-labels">
+        <span id="prog-label">0 / 6 fasi completate</span>
+        <span id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+</main>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+const DEFAULT_STEPS = [
+  {
+    id: 'step1', num: 1, title: 'Brief & Analisi',
+    desc: 'Raccolta requisiti, analisi competitor, definizione obiettivi, KPI e target del progetto.',
+    status: 'pending',
+    checks: ['Compilato brief cliente', 'Analisi competitor (min. 3)', 'Definiti KPI e obiettivi', 'Budget e timeline concordati'],
+    notes: ''
+  },
+  {
+    id: 'step2', num: 2, title: 'Strategia & Wireframe',
+    desc: 'Architettura informativa, user flow, sitemap, wireframe low-fidelity e validazione con il cliente.',
+    status: 'pending',
+    checks: ['Sitemap approvata', 'User flow definito', 'Wireframe low-fi completati', 'Approvazione cliente ricevuta'],
+    notes: ''
+  },
+  {
+    id: 'step3', num: 3, title: 'Design UI',
+    desc: 'Mockup hi-fidelity, sistema di design, palette, tipografia, componenti e micro-interazioni.',
+    status: 'pending',
+    checks: ['Moodboard condiviso', 'Palette e font approvati', 'Mockup desktop completati', 'Mockup mobile completati', 'Design system documentato'],
+    notes: ''
+  },
+  {
+    id: 'step4', num: 4, title: 'Sviluppo',
+    desc: 'Implementazione frontend/backend, integrazioni API, CMS, ottimizzazione performance e codice.',
+    status: 'pending',
+    checks: ['Setup ambiente dev', 'Frontend implementato', 'Backend / CMS configurato', 'Integrazioni API funzionanti', 'Performance ottimizzata'],
+    notes: ''
+  },
+  {
+    id: 'step5', num: 5, title: 'QA & Testing',
+    desc: 'Test cross-browser, responsive, velocità PageSpeed, accessibilità WCAG e revisione finale.',
+    status: 'pending',
+    checks: ['Test cross-browser completato', 'Check responsive (mobile/tablet)', 'PageSpeed > 85', 'Link interni verificati', 'Revisione finale cliente'],
+    notes: ''
+  },
+  {
+    id: 'step6', num: 6, title: 'Consegna & Go Live',
+    desc: 'Deploy produzione, handoff documentazione, formazione cliente e monitoraggio post-launch.',
+    status: 'pending',
+    checks: ['Deploy su produzione', 'Documentazione consegnata', 'Formazione cliente effettuata', 'Analytics attivi', 'Backup configurato'],
+    notes: ''
+  }
+];
+
+let steps = store.get('hub_roadmap', null) || deepCopy(DEFAULT_STEPS);
+// ensure checklist arrays exist
+steps.forEach(s => {
+  if (!s.checksDone) s.checksDone = [];
+});
+
+function deepCopy(obj) { return JSON.parse(JSON.stringify(obj)); }
+function save() { syncSave('hub_roadmap', steps); }
+
+// ── RENDER ──────────────────────────────────────────────
+function render() {
+  const done = steps.filter(s => s.status === 'done').length;
+  const pct  = Math.round(done / steps.length * 100);
+  document.getElementById('prog-fill').style.width  = pct + '%';
+  document.getElementById('prog-label').textContent = `${done} / ${steps.length} fasi completate`;
+  document.getElementById('prog-pct').textContent   = pct + '%';
+
+  document.getElementById('timeline').innerHTML = steps.map(s => {
+    const numClass = s.status;
+    const numContent = s.status === 'done' ? '✓' : s.num;
+    const statusLabel = s.status === 'done' ? 'status-done' : s.status === 'active' ? 'status-active' : 'status-pending';
+    const statusText  = s.status === 'done' ? '✓ Completata' : s.status === 'active' ? '⚡ In Corso' : '○ In Attesa';
+
+    const checksHtml = s.checks.map((c, i) => {
+      const checked = (s.checksDone || []).includes(i);
+      return `<li class="check-item ${checked ? 'done-item' : ''}" onclick="toggleCheck('${s.id}',${i})">
+        <div class="check-box">${checked ? '✓' : ''}</div>
+        ${esc(c)}
+      </li>`;
+    }).join('');
+
+    return `
+      <div class="step">
+        <div class="step-num ${numClass}" onclick="cycleStatus('${s.id}')" title="Clicca per cambiare stato">${numContent}</div>
+        <div class="step-card ${s.status === 'active' ? 'active-card' : ''}">
+          <div class="step-card-header">
+            <div class="step-card-title">${esc(s.title)}</div>
+            <div class="step-card-actions">
+              <span class="status ${statusLabel}">${statusText}</span>
+              <button class="btn btn-ghost btn-sm btn-icon" onclick="toggleNotes('${s.id}')" title="Note">📝</button>
+            </div>
+          </div>
+          <div class="step-card-desc">${esc(s.desc)}</div>
+          <ul class="step-checklist">${checksHtml}</ul>
+          <div style="font-size:11px;color:var(--text-35);">
+            ${(s.checksDone||[]).length}/${s.checks.length} attività completate
+          </div>
+          <div class="step-notes ${s.notes ? 'open' : ''}" id="notes-${s.id}">
+            <textarea placeholder="Note operative per questa fase…" oninput="saveNote('${s.id}',this.value)">${esc(s.notes||'')}</textarea>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // badges
+  document.getElementById('sb-badge-progetti') && (document.getElementById('sb-badge-progetti').textContent = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length);
+  document.getElementById('sb-badge-interventi') && (document.getElementById('sb-badge-interventi').textContent = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length);
+  document.getElementById('sb-badge-skills').textContent = store.get('hub_skills',[]).length;
+  document.getElementById('sb-badge-archivio').textContent = store.get('hub_archivio',[]).length;
+  if (store.get('hub_groq_key','')) {
+    document.getElementById('sb-api-dot').classList.remove('off');
+    document.getElementById('sb-api-label').textContent = 'Groq API configurata';
+  }
+}
+
+// ── INTERACTIONS ────────────────────────────────────────
+function cycleStatus(id) {
+  const s = steps.find(x => x.id === id);
+  if (!s) return;
+  const cycle = { pending: 'active', active: 'done', done: 'pending' };
+  s.status = cycle[s.status];
+  save(); (async function init() {
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    try {
+      await GitHubSync.pullAll();
+      steps = store.get('hub_roadmap', null) || deepCopy(DEFAULT_STEPS);
+      steps.forEach(s => { if (!s.checksDone) s.checksDone = []; });
+    } catch(e) { console.warn('Sync pull failed:', e.message); }
+  }
+  render();
+})();
+}
+
+function toggleCheck(id, idx) {
+  const s = steps.find(x => x.id === id);
+  if (!s) return;
+  if (!s.checksDone) s.checksDone = [];
+  const i = s.checksDone.indexOf(idx);
+  if (i > -1) s.checksDone.splice(i, 1);
+  else s.checksDone.push(idx);
+  save(); render();
+}
+
+function toggleNotes(id) {
+  document.getElementById('notes-' + id).classList.toggle('open');
+}
+
+function saveNote(id, val) {
+  const s = steps.find(x => x.id === id);
+  if (s) { s.notes = val; save(); }
+}
+
+function resetAll() {
+  if (!confirm('Resettare tutta la roadmap? Le note andranno perse.')) return;
+  steps = deepCopy(DEFAULT_STEPS);
+  steps.forEach(s => s.checksDone = []);
+  save(); render();
+  toast('Roadmap resettata', 'info');
+}
+
+function exportRoadmap() {
+  const lines = steps.map(s => {
+    const done = (s.checksDone||[]).length;
+    const checks = s.checks.map((c,i) => `  [${(s.checksDone||[]).includes(i)?'x':' '}] ${c}`).join('\n');
+    return `## ${s.num}. ${s.title} [${s.status.toUpperCase()}]\n${s.desc}\n\nChecklist:\n${checks}${s.notes ? '\n\nNote:\n' + s.notes : ''}`;
+  });
+  downloadFile('roadmap-progetto.md', '# Roadmap Web Project\n\n' + lines.join('\n\n---\n\n'));
+  toast('Roadmap esportata!', 'ok');
+}
+
+render();
+
+  // API status dot
+  if (store.get('hub_groq_key','')) {
+    const dot = document.getElementById('sb-api-dot');
+    const lbl = document.getElementById('sb-api-label');
+    if (dot) dot.classList.remove('off');
+    if (lbl) lbl.textContent = 'Groq API configurata';
+  }
+  // Badges progetti/interventi
+  const _progettiAttivi   = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length;
+  const _interventiAperti = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length;
+  const _sbp = document.getElementById('sb-badge-progetti');
+  const _sbi = document.getElementById('sb-badge-interventi');
+  if (_sbp) _sbp.textContent = _progettiAttivi;
+  if (_sbi) _sbi.textContent = _interventiAperti;
+
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>

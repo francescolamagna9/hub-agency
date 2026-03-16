@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Skill & Procedure — Agency Hub</title>
+<link rel="stylesheet" href="../assets/css/base.css"/>
+<style>
+.toolbar { display:flex; align-items:center; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+.search-wrap { position:relative; flex:1; min-width:200px; }
+.search-wrap .si { position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:13px; color:var(--text-35); pointer-events:none; }
+.search-wrap input { padding-left:36px; }
+
+.filter-bar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:22px; }
+.ftab {
+  padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--glass-border); background:var(--glass-fill);
+  color:var(--text-60); transition:all var(--transition);
+}
+.ftab.active, .ftab:hover {
+  background:rgba(124,106,255,0.18); color:var(--accent-violet-soft);
+  border-color:rgba(124,106,255,0.32);
+}
+
+.skills-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:16px; }
+
+.skill-card {
+  background:var(--glass-fill); border:1px solid var(--glass-border);
+  border-radius:var(--r-xl); padding:20px;
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  transition:all var(--transition); position:relative; overflow:hidden;
+}
+.skill-card:hover { border-color:var(--glass-border-hover); transform:translateY(-2px); box-shadow:0 12px 32px rgba(0,0,0,0.25); }
+.skill-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+.skill-card-name { font-family:'Syne',sans-serif; font-weight:700; font-size:15px; line-height:1.3; }
+.skill-card-actions { display:flex; gap:5px; flex-shrink:0; }
+.sk-btn {
+  background:none; border:1px solid var(--glass-border); color:var(--text-35);
+  padding:5px 8px; border-radius:var(--r-sm); font-size:12px;
+  transition:all var(--transition);
+}
+.sk-btn:hover { background:var(--glass-fill-md); color:var(--text-100); border-color:var(--glass-border-hover); }
+.sk-btn.danger:hover { background:rgba(248,113,113,0.12); color:#f87171; border-color:rgba(248,113,113,0.25); }
+
+.skill-card-desc { font-size:13px; color:var(--text-60); line-height:1.5; margin-bottom:12px; }
+.skill-card-meta { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.skill-card-file {
+  font-size:11px; color:var(--text-35); margin-top:8px;
+  display:flex; align-items:center; gap:5px;
+}
+.skill-card-file a { color:var(--accent-violet-soft); }
+
+/* preview drawer */
+.preview-drawer {
+  display:none; margin-top:14px; padding-top:14px;
+  border-top:1px solid var(--glass-border);
+}
+.preview-drawer.open { display:block; }
+.preview-iframe {
+  width:100%; height:260px; border:none;
+  border-radius:var(--r-md); background:#fff;
+}
+.preview-text {
+  background:rgba(0,0,0,0.25); border-radius:var(--r-md);
+  padding:12px; font-size:12px; color:var(--text-60);
+  white-space:pre-wrap; max-height:200px; overflow-y:auto;
+  line-height:1.6;
+}
+
+/* empty */
+.empty { text-align:center; padding:64px 20px; grid-column:1/-1; }
+.empty-icon { font-size:44px; margin-bottom:14px; opacity:.3; }
+.empty-title { font-family:'Syne',sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; }
+.empty-sub { font-size:13px; color:var(--text-60); line-height:1.6; }
+
+/* modal large */
+.modal-lg { max-width:640px; }
+
+@media(max-width:768px){ .toolbar { flex-direction:column; align-items:stretch; } }
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo"><div class="sidebar-logo-icon">⚡</div><div><div class="sidebar-logo-name">Agency Hub</div><div class="sidebar-logo-sub">Centro Operativo</div></div></div>
+  <div class="sidebar-section-label">Principale</div>
+  <a class="nav-item" href="../index.html"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Lavori</div>
+  <a class="nav-item" href="../progetti/index.html"><span class="nav-icon">📁</span><span class="nav-label">Progetti</span><span class="nav-badge" id="sb-badge-progetti">0</span></a>
+  <a class="nav-item" href="../interventi/index.html"><span class="nav-icon">🔧</span><span class="nav-label">Interventi</span><span class="nav-badge" id="sb-badge-interventi">0</span></a>
+  <div class="sidebar-sep"></div>
+  <div class="sidebar-section-label">Strumenti</div>
+  <a class="nav-item active" href="index.html"><span class="nav-icon">🗂</span><span class="nav-label">Skill & Procedure</span><span class="nav-badge" id="sb-badge-skills">0</span></a>
+  <a class="nav-item" href="../roadmap/index.html"><span class="nav-icon">🗺</span><span class="nav-label">Roadmap Progetto</span><span class="nav-badge green">6</span></a>
+  <a class="nav-item" href="../schede-prodotto/index.html"><span class="nav-icon">✦</span><span class="nav-label">Schede Prodotto AI</span></a>
+  <a class="nav-item" href="../archivio/index.html"><span class="nav-icon">📁</span><span class="nav-label">Archivio Template</span><span class="nav-badge" id="sb-badge-archivio">0</span></a>
+  <div class="sidebar-sep"></div><a class="nav-item" href="../impostazioni/index.html"><span class="nav-icon">⚙️</span><span class="nav-label">Impostazioni</span></a>    <div style="margin-bottom:6px;padding:0 4px;">
+      <span class="sync-indicator sync-idle" id="sync-indicator">Sync non configurato</span>
+    </div>
+  <div class="sidebar-footer"><div class="sidebar-footer-ver">Agency Hub v2.0</div><div class="sidebar-footer-api" onclick="location.href='../impostazioni/index.html'"><span class="sidebar-footer-api-dot off" id="sb-api-dot"></span><span id="sb-api-label">API Key non configurata</span></div></div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="sidebarClose()"></div>
+<div class="topbar"><div class="topbar-logo"><div class="topbar-logo-icon">⚡</div>Agency Hub</div><button class="hamburger" onclick="sidebarToggle()">☰</button></div>
+<div class="bottom-nav"><div class="bottom-nav-inner">
+  <button class="bnav-item" onclick="location.href='../index.html'"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-item" onclick="location.href='../progetti/index.html'"><span class="bicon">📁</span>Progetti</button>
+  <button class="bnav-item" onclick="location.href='../interventi/index.html'"><span class="bicon">🔧</span>Interventi</button>
+  <button class="bnav-item" onclick="location.href='../schede-prodotto/index.html'"><span class="bicon">✦</span>Schede</button>
+  <button class="bnav-item" onclick="location.href='../impostazioni/index.html'"><span class="bicon">⚙️</span>Settings</button>
+</div></div>
+
+<main class="main-content">
+  <div class="page-header">
+    <div class="flex items-center justify-between" style="flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="page-eyebrow">Skill Manager</div>
+        <div class="page-title">🗂 Skill & Procedure</div>
+        <div class="page-sub">Archivia competenze, procedure operative, prompt e workflow riutilizzabili.</div>
+      </div>
+      <button class="btn btn-primary" onclick="modalOpen('modal-add')">＋ Aggiungi Skill</button>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="si">🔍</span>
+      <input class="form-input" type="text" id="search-input" placeholder="Cerca per nome, tag, categoria…" oninput="renderSkills()"/>
+    </div>
+    <button class="btn btn-ghost" onclick="modalOpen('modal-add')">＋ Nuova</button>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <div class="ftab active" data-cat="all">Tutte</div>
+    <div class="ftab" data-cat="Copywriting">Copywriting</div>
+    <div class="ftab" data-cat="Development">Development</div>
+    <div class="ftab" data-cat="Design">Design</div>
+    <div class="ftab" data-cat="SEO">SEO</div>
+    <div class="ftab" data-cat="Project Management">PM</div>
+    <div class="ftab" data-cat="HTML / Template">HTML</div>
+    <div class="ftab" data-cat="Prompt AI">Prompt AI</div>
+    <div class="ftab" data-cat="Altro">Altro</div>
+  </div>
+
+  <div class="skills-grid" id="skills-grid"></div>
+</main>
+
+<!-- MODAL ADD/EDIT -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title-text">➕ Aggiungi Skill</div>
+      <button class="modal-close" onclick="modalClose('modal-add')">✕</button>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Nome Skill <span>*</span></label>
+        <input class="form-input" type="text" id="f-name" placeholder="es. Procedura Brief Cliente…"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Versione</label>
+        <input class="form-input" type="text" id="f-ver" placeholder="1.0"/>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <select class="form-select" id="f-cat">
+          <option>Copywriting</option>
+          <option>Project Management</option>
+          <option>Development</option>
+          <option>Design</option>
+          <option>SEO</option>
+          <option>HTML / Template</option>
+          <option>Prompt AI</option>
+          <option>Altro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Priorità</label>
+        <select class="form-select" id="f-priority">
+          <option value="normale">Normale</option>
+          <option value="alta">Alta</option>
+          <option value="bassa">Bassa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Descrizione</label>
+      <textarea class="form-textarea" id="f-desc" placeholder="Spiega brevemente a cosa serve questa skill…"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Tag</label>
+      <div class="tags-row" id="tags-row">
+        <button class="btn btn-ghost btn-sm" onclick="addTag()" type="button">+ Tag</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Carica File</label>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('f-file').click()">
+        <div class="drop-zone-icon">📂</div>
+        <div class="drop-zone-text">Trascina il file o clicca per selezionarlo</div>
+        <div class="drop-zone-hint">.html .txt .md .zip .pdf .json e altri</div>
+        <input type="file" id="f-file" style="display:none" onchange="handleFile(this)"/>
+      </div>
+      <div id="f-file-info" style="display:none; margin-top:8px; font-size:12px; color:var(--accent-violet-soft);"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Oppure scrivi il contenuto direttamente</label>
+      <textarea class="form-textarea" id="f-content" placeholder="Incolla procedure, prompt, note, checklist…" style="min-height:110px;"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="modalClose('modal-add')">Annulla</button>
+      <button class="btn btn-primary" onclick="saveSkill()">💾 Salva Skill</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/github-sync.js"></script>
+<script src="../assets/js/core.js"></script>
+<script>
+let skills = store.get('hub_skills', []);
+let filterCat = 'all';
+let editId = null;
+let currentTags = [];
+let currentFile = null;
+
+// ── FILTER TABS ──────────────────────────────────────────
+document.getElementById('filter-bar').addEventListener('click', e => {
+  const t = e.target.closest('.ftab');
+  if (!t) return;
+  document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  filterCat = t.dataset.cat;
+  renderSkills();
+});
+
+// ── RENDER ───────────────────────────────────────────────
+function renderSkills() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const filtered = skills.filter(s => {
+    const matchCat = filterCat === 'all' || s.category === filterCat;
+    const matchQ = !q
+      || s.name.toLowerCase().includes(q)
+      || (s.desc||'').toLowerCase().includes(q)
+      || (s.tags||[]).some(t => t.toLowerCase().includes(q));
+    return matchCat && matchQ;
+  });
+
+  const grid = document.getElementById('skills-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty">
+      <div class="empty-icon">🗂</div>
+      <div class="empty-title">${skills.length ? 'Nessun risultato' : 'Ancora nessuna skill'}</div>
+      <div class="empty-sub">${skills.length ? 'Prova a cambiare filtro o ricerca.' : 'Clicca <strong>+ Aggiungi Skill</strong> per iniziare a costruire il tuo arsenale.'}</div>
+    </div>`;
+    return;
+  }
+
+  const priorityIcon = { alta: '🔴', normale: '🟡', bassa: '⚪' };
+
+  grid.innerHTML = filtered.map(s => `
+    <div class="skill-card" id="sc-${s.id}">
+      <div class="skill-card-top">
+        <div class="skill-card-name">${esc(s.name)} ${s.priority === 'alta' ? '<span title="Alta priorità">🔴</span>' : ''}</div>
+        <div class="skill-card-actions">
+          ${s.content || s.fileContent ? `<button class="sk-btn" onclick="togglePreview('${s.id}')" title="Preview">👁</button>` : ''}
+          ${s.content ? `<button class="sk-btn" onclick="copySkillContent('${s.id}')" title="Copia contenuto">📋</button>` : ''}
+          <button class="sk-btn" onclick="editSkill('${s.id}')" title="Modifica">✏️</button>
+          <button class="sk-btn danger" onclick="deleteSkill('${s.id}')" title="Elimina">✕</button>
+        </div>
+      </div>
+      ${s.desc ? `<div class="skill-card-desc">${esc(s.desc)}</div>` : ''}
+      <div class="skill-card-meta">
+        ${s.category ? `<span class="tag tag-cyan">${esc(s.category)}</span>` : ''}
+        ${(s.tags||[]).map(t => `<span class="tag tag-violet">${esc(t)}</span>`).join('')}
+        ${s.version ? `<span style="margin-left:auto;font-size:11px;color:var(--text-35)">v${esc(s.version)}</span>` : ''}
+      </div>
+      ${s.fileName ? `<div class="skill-card-file">📎 <span>${esc(s.fileName)}</span>${s.fileUrl ? ` — <a href="${s.fileUrl}" download="${esc(s.fileName)}">scarica</a>` : ''}</div>` : ''}
+      <div class="preview-drawer" id="prev-${s.id}">
+        ${buildPreview(s)}
+      </div>
+    </div>
+  `).join('');
+
+  updateBadges();
+}
+
+function buildPreview(s) {
+  if (s.fileType === 'text/html' && s.fileContent) {
+    const blob = new Blob([s.fileContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    return `<iframe class="preview-iframe" src="${url}"></iframe>`;
+  }
+  if (s.content) {
+    return `<div class="preview-text">${esc(s.content)}</div>`;
+  }
+  if (s.fileContent) {
+    return `<div class="preview-text">${esc(s.fileContent.slice(0, 800))}${s.fileContent.length > 800 ? '\n…' : ''}</div>`;
+  }
+  return '';
+}
+
+function togglePreview(id) {
+  document.getElementById('prev-' + id).classList.toggle('open');
+}
+
+async function copySkillContent(id) {
+  const s = skills.find(x => x.id === id);
+  if (s && s.content) copyText(s.content, 'Contenuto');
+}
+
+// ── SAVE ─────────────────────────────────────────────────
+async function saveSkill() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('Inserisci il nome della skill!', 'err'); return; }
+
+  const skill = {
+    id: editId || ('sk_' + Date.now()),
+    name,
+    version:  document.getElementById('f-ver').value.trim() || '1.0',
+    category: document.getElementById('f-cat').value,
+    priority: document.getElementById('f-priority').value,
+    desc:     document.getElementById('f-desc').value.trim(),
+    tags:     [...currentTags],
+    content:  document.getElementById('f-content').value.trim(),
+    fileName:    currentFile?.name       || '',
+    fileType:    currentFile?.type       || '',
+    fileContent: currentFile?.content    || '',
+    githubUrl:   currentFile?.githubUrl  || '',
+    updatedAt: Date.now(),
+  };
+
+  if (editId) {
+    const idx = skills.findIndex(s => s.id === editId);
+    if (idx > -1) skills[idx] = skill;
+  } else {
+    skill.createdAt = Date.now();
+    skills.unshift(skill);
+    logActivity('🗂', `Skill aggiunta: ${name}`);
+  }
+
+  await syncSave('hub_skills', skills);
+  modalClose('modal-add');
+  resetModal();
+  renderSkills();
+  toast('Skill salvata!', 'ok');
+}
+
+async function deleteSkill(id) {
+  if (!confirm('Eliminare questa skill?')) return;
+  skills = skills.filter(s => s.id !== id);
+  await syncSave('hub_skills', skills);
+  renderSkills();
+  toast('Skill eliminata', 'info');
+}
+
+function editSkill(id) {
+  const s = skills.find(x => x.id === id);
+  if (!s) return;
+  editId = id;
+  currentTags = [...(s.tags || [])];
+  document.getElementById('modal-title-text').textContent = '✏️ Modifica Skill';
+  document.getElementById('f-name').value    = s.name;
+  document.getElementById('f-ver').value     = s.version || '';
+  document.getElementById('f-cat').value     = s.category || 'Altro';
+  document.getElementById('f-priority').value = s.priority || 'normale';
+  document.getElementById('f-desc').value    = s.desc || '';
+  document.getElementById('f-content').value = s.content || '';
+  if (s.fileName) {
+    const fi = document.getElementById('f-file-info');
+    fi.textContent = '📎 ' + s.fileName;
+    fi.style.display = 'block';
+    currentFile = { name: s.fileName, type: s.fileType, content: s.fileContent };
+  }
+  renderTagsRow();
+  modalOpen('modal-add');
+}
+
+function resetModal() {
+  editId = null; currentTags = []; currentFile = null;
+  document.getElementById('modal-title-text').textContent = '➕ Aggiungi Skill';
+  ['f-name','f-ver','f-desc','f-content'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-cat').value = 'Copywriting';
+  document.getElementById('f-priority').value = 'normale';
+  document.getElementById('f-file-info').style.display = 'none';
+  document.getElementById('f-file').value = '';
+  renderTagsRow();
+}
+
+// ── TAGS ─────────────────────────────────────────────────
+function addTag() {
+  const t = prompt('Nuovo tag:');
+  if (t && t.trim()) { currentTags.push(t.trim()); renderTagsRow(); }
+}
+function removeTag(i) { currentTags.splice(i, 1); renderTagsRow(); }
+function renderTagsRow() {
+  document.getElementById('tags-row').innerHTML =
+    currentTags.map((t, i) => `<span class="tag tag-violet">${esc(t)} <span class="tag-remove" onclick="removeTag(${i})">✕</span></span>`).join('') +
+    `<button class="btn btn-ghost btn-sm" onclick="addTag()" type="button">+ Tag</button>`;
+}
+
+// ── FILE ─────────────────────────────────────────────────
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const isText = /text|json|javascript|html|xml|markdown/i.test(file.type) || 
+                 /\.(txt|md|html|htm|css|js|json|xml|csv)$/i.test(file.name);
+
+  const reader = new FileReader();
+
+  reader.onload = async e => {
+    const content = e.target.result;
+    currentFile = { name: file.name, type: file.type, content };
+
+    const fi = document.getElementById('f-file-info');
+    fi.textContent = '📎 ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+    fi.style.display = 'block';
+
+    // Se GitHub è configurato, upload immediato del file
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      fi.textContent += ' — uploading su GitHub…';
+      try {
+        const url = await GitHubSync.uploadFile(file.name, content, !isText);
+        currentFile.githubUrl = url;
+        fi.textContent = '📎 ' + file.name + ' ✓ su GitHub';
+        fi.style.color = 'var(--accent-green)';
+      } catch(err) {
+        fi.textContent = '📎 ' + file.name + ' (solo locale — sync fallito)';
+        console.warn('File upload failed:', err.message);
+      }
+    }
+  };
+
+  if (isText) {
+    reader.readAsText(file);
+  } else {
+    reader.readAsDataURL(file); // base64 for binary files (zip, pdf, etc)
+  }
+}
+
+// drop
+const dz = document.getElementById('drop-zone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if (file) { const dt = new DataTransfer(); dt.items.add(file); document.getElementById('f-file').files = dt.files; handleFile(document.getElementById('f-file')); }
+});
+
+// ── ACTIVITY ─────────────────────────────────────────────
+function logActivity(icon, text) {
+  const acts = store.get('hub_activity', []);
+  acts.unshift({ icon, text, time: new Date().toLocaleTimeString('it', { hour: '2-digit', minute: '2-digit' }) });
+  store.set('hub_activity', acts.slice(0, 20));
+}
+
+// ── BADGES ───────────────────────────────────────────────
+function updateBadges() {
+  document.getElementById('sb-badge-progetti') && (document.getElementById('sb-badge-progetti').textContent = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length);
+  document.getElementById('sb-badge-interventi') && (document.getElementById('sb-badge-interventi').textContent = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length);
+  document.getElementById('sb-badge-skills').textContent = skills.length;
+  const arch = store.get('hub_archivio', []);
+  document.getElementById('sb-badge-archivio').textContent = arch.length;
+  if (store.get('hub_groq_key','')) {
+    document.getElementById('sb-api-dot').classList.remove('off');
+    document.getElementById('sb-api-label').textContent = 'Groq API configurata';
+  }
+}
+
+// ── INIT ─────────────────────────────────────────────────
+(async function init() {
+  if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+    try {
+      await GitHubSync.pullAll();
+      skills = store.get('hub_skills', []);
+    } catch(e) { console.warn('Sync pull failed:', e.message); }
+  }
+  renderSkills();
+})();
+
+  // API status dot
+  if (store.get('hub_groq_key','')) {
+    const dot = document.getElementById('sb-api-dot');
+    const lbl = document.getElementById('sb-api-label');
+    if (dot) dot.classList.remove('off');
+    if (lbl) lbl.textContent = 'Groq API configurata';
+  }
+  // Badges progetti/interventi
+  const _progettiAttivi   = store.get('hub_progetti',[]).filter(p=>p.status!=='completato').length;
+  const _interventiAperti = store.get('hub_interventi',[]).filter(i=>i.status!=='done').length;
+  const _sbp = document.getElementById('sb-badge-progetti');
+  const _sbi = document.getElementById('sb-badge-interventi');
+  if (_sbp) _sbp.textContent = _progettiAttivi;
+  if (_sbi) _sbi.textContent = _interventiAperti;
+
+
+  // Update sync indicator
+  (function() {
+    const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    if (typeof GitHubSync !== 'undefined' && GitHubSync.isConfigured()) {
+      const last = GitHubSync.getLastSync();
+      ind.className = 'sync-indicator sync-ok';
+      ind.textContent = last === 'Mai sincronizzato' ? 'GitHub configurato' : 'Sync · ' + last;
+    }
+  })();
+</script>
+</body>
+</html>
