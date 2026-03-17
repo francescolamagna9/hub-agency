@@ -129,6 +129,68 @@
         }
       ]
     },
-    "createdAt": 1773683488815
+    "createdAt": 1773683488815,
+    "pages": [
+      {
+        "id": "pg_0",
+        "name": "Home",
+        "kwd": "sartoria Enna, taglia e cuci",
+        "kwdSec": "ritocco abito, modifica pantaloni",
+        "sezioni": [
+          "presentazione",
+          "servizi",
+          "contatti"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_1",
+        "name": "Chi Siamo",
+        "kwd": "sartoria tradizionale, artigianato",
+        "kwdSec": "storia, mission",
+        "sezioni": [
+          "storia",
+          "presentazione",
+          "valori"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_2",
+        "name": "Servizi",
+        "kwd": "taglia e cuci, modifica abiti",
+        "kwdSec": "orli, cerniere, cuciture",
+        "sezioni": [
+          "elenco servizi",
+          "descrizioni",
+          "prezzi"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_3",
+        "name": "Contatti",
+        "kwd": "contatti, indirizzo",
+        "kwdSec": "telefono, email",
+        "sezioni": [
+          "form di contatto",
+          "mappa",
+          "orari"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      }
+    ]
   }
 ]
