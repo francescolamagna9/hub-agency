@@ -1,1 +1,429 @@
-[]
+[
+  {
+    "id": "proj_1773827971904",
+    "name": "Taglia e cuci",
+    "domain": "tagliaecuci.it",
+    "tipo": "vetrina",
+    "status": "attivo",
+    "logo": "data:image/jpeg;base64,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",
+    "wpUrl": "",
+    "wpUser": "",
+    "links": [],
+    "notes": "",
+    "checklist": [
+      {
+        "id": "fase_1",
+        "num": 1,
+        "label": "Brief & Setup Progetto",
+        "icon": "📋",
+        "desc": "Raccolta materiali, arricchimento brief e definizione struttura del sito.",
+        "checks": [
+          "Ricevuto logo dal cliente (vettoriale preferito)",
+          "Raccolto screen/feed Instagram e riferimenti visivi",
+          "Ricevuti testi, foto e materiali utili del cliente",
+          "Compilato e arricchito il brief in modo completo e definitivo",
+          "Definite le pagine necessarie per il sito",
+          "Concordati tempi e obiettivi con il cliente"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_2",
+        "num": 2,
+        "label": "Ricerca Design & Template",
+        "icon": "🎨",
+        "desc": "Selezione del template su Envato e importazione su WordPress.",
+        "checks": [
+          "Trovate reference visive per il design (Dribbble, Behance…)",
+          "Scelto il template su Envato / ThemeForest",
+          "Template scaricato da Envato",
+          "Template caricato e attivato su WordPress",
+          "Demo pages necessarie importate (child theme attivo)"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_3",
+        "num": 3,
+        "label": "Setup Base WordPress",
+        "icon": "⚙️",
+        "desc": "Configurazione struttura pagine, navigazione, header, footer e impostazioni globali.",
+        "checks": [
+          "Create tutte le pagine del sito (come da brief)",
+          "Importato template Elementor per ogni singola pagina",
+          "Importati Header e Footer da Elementor",
+          "Creato e configurato il menu di navigazione",
+          "Impostati colori globali in Elementor (palette del cliente)",
+          "Impostati font globali in Elementor"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_4",
+        "num": 4,
+        "label": "Sviluppo Pagine",
+        "icon": "🖥️",
+        "desc": "Modifica schematica di tutte le pagine: struttura, sezioni, template e foto.",
+        "checks": [
+          "Header: logo, navigazione e CTA impostati correttamente",
+          "Home — Hero: immagini, testi e CTA adattati al cliente",
+          "Home — sezioni: struttura snellita, foto adatte caricate per ogni sezione",
+          "Tutte le altre pagine adattate sezione per sezione",
+          "Footer: struttura e link impostati",
+          "Logo Evolve aggiunto nel footer"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_5",
+        "num": 5,
+        "label": "Copy & Contenuti",
+        "icon": "✍️",
+        "desc": "Scrittura dei testi con AI+prompt, divisi per sezione e per pagina.",
+        "checks": [
+          "Copy scritto per la Home (sezione per sezione con AI+prompt)",
+          "Copy scritto per tutte le altre pagine del sito",
+          "H1 keyword creato per ogni pagina (nascosto con classe CSS)",
+          "Copy riletto e revisionato per coerenza e qualità"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_6",
+        "num": 6,
+        "label": "Pagine Legali & Footer",
+        "icon": "🔒",
+        "desc": "Generazione pagine legali con plugin e collegamento al footer.",
+        "checks": [
+          "Privacy Policy generata e pubblicata (plugin)",
+          "Cookie Policy generata e pubblicata (plugin)",
+          "Pagina Copyright / Note Legali creata",
+          "Footer: link legali collegati correttamente (privacy, cookie, copyright)",
+          "Banner cookie configurato e funzionante"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_7",
+        "num": 7,
+        "label": "QA & Controllo Qualità",
+        "icon": "🔍",
+        "desc": "Verifica link, coerenza visiva, responsive e modulo di contatto.",
+        "checks": [
+          "Tutti i link verificati (tel, email, mappe, pulsanti, social)",
+          "Coerenza design controllata (icone, hover, animazioni, stile)",
+          "Modulo di contatto (Contact Form 7) testato e funzionante",
+          "Responsive desktop verificato",
+          "Responsive tablet verificato",
+          "Responsive mobile verificato",
+          "Header mobile verificato e corretto"
+        ],
+        "doneChecks": [],
+        "done": false
+      },
+      {
+        "id": "fase_8",
+        "num": 8,
+        "label": "Impostazioni & Go Live",
+        "icon": "🚀",
+        "desc": "Configurazione finale WordPress e pubblicazione del sito.",
+        "checks": [
+          "Favicon caricata e impostata",
+          "Impostazioni generali WordPress compilate (titolo, tagline, URL)",
+          "Permalink impostati correttamente",
+          "Impostazioni lettura: sito indicizzabile",
+          "Immagini ottimizzate (WebP o compresse)",
+          "Sito consegnato al cliente e link condiviso"
+        ],
+        "doneChecks": [],
+        "done": false
+      }
+    ],
+    "brief": {
+      "cliente": "Misca Srl",
+      "nomeCommerciale": "Taglia e Cuci Express",
+      "settore": "Sartoria / Taglia e Cuci / Abbigliamento",
+      "tipoSito": "Vetrina (sito istituzionale, no e-commerce)",
+      "obiettivo": "Acquisire contatti locali e presentare i servizi sartoriali online",
+      "partitaIva": "01259480869",
+      "indirizzo": "Via Basilicata, 2 · 94100 Enna (EN)",
+      "telefono": "333 614 9215",
+      "email": "miscasrlenna@gmail.com",
+      "domain": "tagliaecucienna.it",
+      "facebook": "https://www.facebook.com/tagliaecuciexpress/",
+      "instagram": "https://www.instagram.com/tagliaecuciexpressenna",
+      "competitor": "SOS Sartoria Enna (sossartoriarapida.it)",
+      "titolarePrivacy": "Giuseppe La Spina",
+      "proposta": "Velocità + Qualità artigianale a Enna. Taglia e Cuci Express è l'alternativa moderna alla sartoria tradizionale: consegne rapide, prezzi accessibili, artigianalità garantita.",
+      "tonoVoce": "Semi-formale, caldo, concreto e rassicurante",
+      "aggettiviSi": "Rapido, Affidabile, Artigianale, Accessibile, Locale, Preciso",
+      "aggettiviNo": "Freddo, Distaccato, Eccessivamente tecnico, Promozionale, Generico",
+      "frasiGiuste": "Portiamo il tuo capo preferito come nuovo. Velocemente, e con la cura che merita.",
+      "frasiEvitare": "La nostra azienda offre soluzioni sartoriali complete per soddisfare ogni esigenza del cliente.",
+      "target": "",
+      "personas": [
+        {
+          "nome": "La Signora Organizzata",
+          "eta": "45–60 anni",
+          "professione": "Impiegata o casalinga, residente a Enna o provincia",
+          "obiettivo": "Trovare rapidamente l'indirizzo, i servizi offerti e un contatto telefonico per chiedere preventivo",
+          "painPoint": "Ha un vestito da sistemare per un evento imminente e non sa se c'è tempo",
+          "comeParla": "Sarto rapido Enna, ritocco abito Enna"
+        },
+        {
+          "nome": "Il Giovane Lavoratore",
+          "eta": "25–38 anni",
+          "professione": "Professionista, commerciante o studente universitario",
+          "obiettivo": "Capire se il servizio è veloce e professionale",
+          "painPoint": "Ha poco tempo, vuole un servizio on-demand senza appuntamenti lunghi",
+          "comeParla": "Taglia e cuci Enna, modifica pantaloni Enna veloce"
+        },
+        {
+          "nome": "Il Commerciante / Rivenditore",
+          "eta": "35–55 anni",
+          "professione": "Titolare di negozio d'abbigliamento, lavanderia o atelier nella zona",
+          "obiettivo": "Valutare un accordo B2B per la lavorazione di capi in serie o in conto terzi",
+          "painPoint": "Ha bisogno di un referente sartoriale locale stabile, con cui costruire una collaborazione duratura",
+          "comeParla": "Sartoria conto terzi Enna, laboratorio cucito professionale Enna"
+        }
+      ],
+      "palette": "",
+      "coloriSistema": {
+        "primario": "",
+        "secondario": "",
+        "testo": "",
+        "sfondo": "",
+        "hover": "",
+        "set1": "",
+        "set2": "",
+        "set3": "",
+        "set4": ""
+      },
+      "font": "",
+      "moodVisivo": "",
+      "templateWordpress": "",
+      "noteOperative": "LOGO: Disponibile tramite i profili social (Facebook/Instagram). Da richiedere in formato vettoriale (SVG o AI) o almeno PNG ad alta risoluzione con sfondo trasparente. Verificare se esiste una versione orizzontale e una verticale. FOTO: Già scattate da Matteo e presenti su Google Drive. Recuperare ANCHE le versioni in formato orizzontale (preferite per hero section e banner). Controllare risoluzione minima (consigliato 1920×1080 px). Verificare i diritti d'uso e la liberatoria. TESTI: Da ricevere dal cliente (tutti i testi delle pagine). Predisporre un documento template con i campi da compilare: descrizione attività, lista servizi con dettagli, storia/presentazione per 'Chi Siamo', orari, modalità di contatto. DOMINIO: Nuovo da registrare — verificare disponibilità di tagliaecucienna.it. Considerare anche tagliaecuciexpress.it come alternativa o redirect. HOSTING: — da ricevere. Definire piano hosting, certificato SSL, e configurazione email aziendale.",
+      "pagine": [
+        {
+          "nome": "Home",
+          "kwd": "Sartoria Enna · Taglia e Cuci Enna",
+          "kwdSecondarie": "",
+          "sezioni": "HERO, INTRO BRAND, SERVIZI IN EVIDENZA, GALLERIA ANTEPRIMA, CALL TO ACTION CENTRALE, MAPPA + ORARI"
+        },
+        {
+          "nome": "Chi Siamo",
+          "kwd": "Taglia e Cuci Enna · Sartoria artigianale Enna",
+          "kwdSecondarie": "",
+          "sezioni": "HERO SECONDARIO, STORIA & VALORI, PUNTI DI FORZA, FOTO LABORATORIO, CTA FOOTER PAGINA"
+        },
+        {
+          "nome": "Servizi",
+          "kwd": "Sartoria Enna · Riparazioni abiti Enna · Modifiche abbigliamento Enna",
+          "kwdSecondarie": "",
+          "sezioni": "INTRO SERVIZI, GRIGLIA SERVIZI, GALLERIA LAVORI"
+        }
+      ]
+    },
+    "createdAt": 1773827971904
+  },
+  {
+    "id": "proj_1773683488815",
+    "name": "Taglio e Cuci Express",
+    "domain": "https://tagliaecucienna.it",
+    "tipo": "vetrina",
+    "status": "attivo",
+    "logo": "data:image/jpeg;base64,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",
+    "wpUrl": "https://tagliaecucienna.it/wp-admin",
+    "wpUser": "eLpAq5tVxb8wh",
+    "links": [],
+    "notes": "",
+    "checklist": [
+      {
+        "id": 1,
+        "label": "Brief & Analisi",
+        "done": false,
+        "checks": [
+          "Brief cliente completato",
+          "Analisi competitor",
+          "Obiettivi e KPI definiti",
+          "Budget e timeline concordati"
+        ]
+      },
+      {
+        "id": 2,
+        "label": "Wireframe",
+        "done": false,
+        "checks": [
+          "Sitemap approvata",
+          "User flow definito",
+          "Wireframe low-fi completati",
+          "Approvazione cliente"
+        ]
+      },
+      {
+        "id": 3,
+        "label": "Design UI",
+        "done": false,
+        "checks": [
+          "Moodboard condiviso",
+          "Palette e font approvati",
+          "Mockup desktop",
+          "Mockup mobile",
+          "Design system"
+        ]
+      },
+      {
+        "id": 4,
+        "label": "Sviluppo",
+        "done": false,
+        "checks": [
+          "Setup ambiente dev",
+          "Frontend implementato",
+          "CMS configurato",
+          "Performance ottimizzata"
+        ]
+      },
+      {
+        "id": 5,
+        "label": "QA & Testing",
+        "done": false,
+        "checks": [
+          "Test cross-browser",
+          "Check responsive",
+          "PageSpeed > 85",
+          "Link verificati",
+          "Revisione cliente"
+        ]
+      },
+      {
+        "id": 6,
+        "label": "Consegna",
+        "done": false,
+        "checks": [
+          "Deploy produzione",
+          "Documentazione consegnata",
+          "Analytics attivi",
+          "Backup configurato"
+        ]
+      }
+    ],
+    "brief": {
+      "cliente": "Misca Srl",
+      "nomeCommerciale": "Taglia e Cuci Express",
+      "settore": "Sartoria / Taglia e Cuci / Abbigliamento",
+      "partitaIva": "01259480869",
+      "indirizzo": "Via Basilicata, 2 · 94100 Enna (EN)",
+      "telefono": "333 614 9215",
+      "email": "miscasrlenna@gmail.com",
+      "domain": "tagliaecucienna.it",
+      "facebook": "https://www.facebook.com/tagliaecuciexpress/",
+      "instagram": "https://www.instagram.com/tagliaecuciexpressenna",
+      "competitor": "SOS Sartoria Enna (sossartoriarapida.it)",
+      "titolarePrivacy": "Giuseppe La Spina",
+      "obiettivo": "Acquisire contatti locali e presentare i servizi sartoriali online",
+      "proposta": "Velocità + Qualità artigianale a Enna. Taglia e Cuci Express è l'alternativa moderna alla sartoria tradizionale: consegne rapide, prezzi accessibili, artigianalità garantita.",
+      "tonoVoce": "Semi-formale, caldo, concreto e rassicurante",
+      "aggettiviSi": "Rapido, Affidabile, Artigianale, Accessibile, Locale, Preciso",
+      "aggettiviNo": "Freddo, Distaccato, Eccessivamente tecnico, Promozionale, Generico",
+      "target": "La Signora Organizzata, Il Giovane Lavoratore, Il Commerciante / Rivenditore",
+      "palette": "",
+      "font": "",
+      "noteOperative": "LOGO: Disponibile tramite i profili social (Facebook/Instagram). FOTO: Già scattate da Matteo e presenti su Google Drive. TESTI: Da ricevere dal cliente. DOMINIO: Nuovo da registrare. HOSTING: Da ricevere.",
+      "pagine": [
+        {
+          "nome": "Home",
+          "kwd": "sartoria Enna, taglia e cuci",
+          "kwdSecondarie": "ritocco abito, modifica pantaloni",
+          "sezioni": "presentazione, servizi, contatti"
+        },
+        {
+          "nome": "Chi Siamo",
+          "kwd": "sartoria tradizionale, artigianato",
+          "kwdSecondarie": "storia, mission",
+          "sezioni": "storia, presentazione, valori"
+        },
+        {
+          "nome": "Servizi",
+          "kwd": "taglia e cuci, modifica abiti",
+          "kwdSecondarie": "orli, cerniere, cuciture",
+          "sezioni": "elenco servizi, descrizioni, prezzi"
+        },
+        {
+          "nome": "Contatti",
+          "kwd": "contatti, indirizzo",
+          "kwdSecondarie": "telefono, email",
+          "sezioni": "form di contatto, mappa, orari"
+        }
+      ]
+    },
+    "createdAt": 1773683488815,
+    "pages": [
+      {
+        "id": "pg_0",
+        "name": "Home",
+        "kwd": "sartoria Enna, taglia e cuci",
+        "kwdSec": "ritocco abito, modifica pantaloni",
+        "sezioni": [
+          "presentazione",
+          "servizi",
+          "contatti"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_1",
+        "name": "Chi Siamo",
+        "kwd": "sartoria tradizionale, artigianato",
+        "kwdSec": "storia, mission",
+        "sezioni": [
+          "storia",
+          "presentazione",
+          "valori"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_2",
+        "name": "Servizi",
+        "kwd": "taglia e cuci, modifica abiti",
+        "kwdSec": "orli, cerniere, cuciture",
+        "sezioni": [
+          "elenco servizi",
+          "descrizioni",
+          "prezzi"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      },
+      {
+        "id": "pg_3",
+        "name": "Contatti",
+        "kwd": "contatti, indirizzo",
+        "kwdSec": "telefono, email",
+        "sezioni": [
+          "form di contatto",
+          "mappa",
+          "orari"
+        ],
+        "sezioniDone": [],
+        "statusCopy": false,
+        "statusSeo": false,
+        "statusDev": false
+      }
+    ]
+  }
+]
